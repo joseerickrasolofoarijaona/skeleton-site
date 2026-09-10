@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Contactez Honey Group pour vos projets web."
+    >
+
+    <meta
+        name="author"
+        content="Honey Group"
+    >
+
+    <title>Contact - Honey Group</title>
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/reset.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/variables.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../assets/css/responsive.css"
+    >
+    <style>
+    .success-message {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 16px 20px;
+        margin-bottom: 25px;
+        border-radius: 12px;
+        border: 1px solid #b7e4c7;
+        background: #f0fff4;
+        color: #1b5e20;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        animation: successAppear 0.5s ease;
+    }
+
+    .success-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #28a745;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .success-message strong {
+        display: block;
+        font-size: 17px;
+        margin-bottom: 4px;
+    }
+
+    .success-message p {
+        margin: 0;
+        font-size: 14px;
+        color: #2e7d32;
+    }
+
+    @keyframes successAppear {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+</head>
+
+
+<body>
+
+
+    <!-- Navigation -->
+
+    <div id="navbar"></div>
+
+
+    <main>
+
+
+        <!-- =========================
+             HERO
+             ========================= -->
+
+        <section class="hero">
+
+            <div class="container">
+
+                <p class="hero-label">
+                    Contact
+                </p>
+
+                <h1>
+                    Parlons de votre projet
+                </h1>
+
+                <p class="hero-description">
+                    Une question ou un projet web ?
+                    Contactez-nous.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             FORMULAIRE
+             ========================= -->
+
+        <section class="section section-light">
+
+            <div class="container">
+
+                <div class="section-header">
+
+                    <p class="section-label">
+                        Nous contacter
+                    </p>
+
+                    <h2>
+                        Envoyez-nous un message
+                    </h2>
+
+                    <p>
+                        Remplissez le formulaire ci-dessous
+                        et nous vous répondrons rapidement.
+                    </p>
+
+                </div>
+
+                <div id="success-message" class="success-message" style="display: none;">
+    <span class="success-icon">✓</span>
+    <div>
+        <strong>Message envoyé !</strong>
+        <p>Merci pour votre message. Nous vous répondrons dans les meilleurs délais.</p>
+    </div>
+</div>
+                <form
+                    class="contact-form"
+                    action="../contact.php"
+                    method="POST"
+                >
+
+
+                    <!-- Nom -->
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Nom
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Votre nom"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Email -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="votre@email.com"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Message -->
+
+                    <div class="form-group">
+
+                        <label for="message">
+                            Message
+                        </label>
+
+                        <textarea
+                            id="message"
+                            name="message"
+                            rows="6"
+                            placeholder="Votre message"
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- Bouton -->
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Envoyer
+                    </button>
+
+
+                </form>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- Footer -->
+
+    <div id="footer"></div>
+
+
+    <!-- JavaScript -->
+
+    <script src="../data/content.js"></script>
+
+    <script src="../assets/js/main.js"></script>
+     <script>
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get("sent") === "1") {
+        document.getElementById("success-message").style.display = "block";
+
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    </script>
+
+</body>
+
+</html>

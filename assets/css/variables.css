@@ -1,0 +1,23 @@
+:root {
+    --font-primary: Arial, Helvetica, sans-serif;
+
+    --color-primary: #1f2937;
+    --color-secondary: #2563eb;
+    --color-text: #374151;
+    --color-light: #f3f4f6;
+    --color-white: #ffffff;
+    --color-border: #e5e7eb;
+
+    --container-width: 1200px;
+
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 2rem;
+    --spacing-lg: 4rem;
+    --spacing-xl: 6rem;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+
+    --transition: 0.3s ease;
+}
