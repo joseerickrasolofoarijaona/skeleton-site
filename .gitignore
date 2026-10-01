@@ -2,3 +2,6 @@
 messages.txt
 wget-log
 README.md.bak
+.env
+messages.txt
+vendor/
