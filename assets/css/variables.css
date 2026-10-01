@@ -1,10 +1,23 @@
-:root {
-    --font-primary: Arial, Helvetica, sans-serif;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
-    --color-primary: #1f2937;
-    --color-secondary: #2563eb;
-    --color-text: #374151;
-    --color-light: #f3f4f6;
+/* Design tokens issus du UI Kit Figma "Honey Group" */
+:root {
+    --font-primary: "Inter", Arial, Helvetica, sans-serif;
+
+    /* Palette Figma */
+    --color-blue: #3474c8;
+    --color-orange: #e67e22;
+    --color-brown: #8b5e3c;
+    --color-black: #000000;
+    --color-sky: #a2d2ff;
+    --color-placeholder: #d9d9d9;
+    --color-navbar: #ffffff;
+
+    /* Rôles */
+    --color-primary: var(--color-blue);
+    --color-secondary: var(--color-orange);
+    --color-text: #1a1a1a;
+    --color-light: #ffffff;
     --color-white: #ffffff;
     --color-border: #e5e7eb;
 
@@ -16,8 +29,8 @@
     --spacing-lg: 4rem;
     --spacing-xl: 6rem;
 
-    --radius-sm: 6px;
-    --radius-md: 10px;
+    --radius-sm: 4px;
+    --radius-md: 6px;
 
     --transition: 0.3s ease;
 }

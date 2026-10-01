@@ -61,6 +61,7 @@ function loadComponent(elementId, file) {
                 }
 
                 setupNavigation();
+                setupMobileMenu();
             }
 
 
@@ -124,6 +125,8 @@ function loadComponent(elementId, file) {
                     footerSiteName.textContent =
                         siteContent.site.name;
                 }
+
+                setupNavigation();
 
             }
 
@@ -199,6 +202,44 @@ function setupNavigation() {
                 `${basePath}pages/contact.html`;
 
         }
+
+
+        /* Lien actif (page en cours) */
+
+        const current =
+            window.location.pathname.split("/").pop() || "index.html";
+
+        if (
+            link.closest(".nav-menu") &&
+            link.getAttribute("href").split("/").pop() === current
+        ) {
+            link.classList.add("active");
+        }
+
+    });
+
+}
+
+
+/* =========================================================
+   MENU MOBILE
+   ========================================================= */
+
+function setupMobileMenu() {
+
+    const header = document.querySelector(".site-header");
+    const toggle = document.getElementById("nav-toggle");
+
+    if (!header || !toggle) {
+        return;
+    }
+
+    toggle.addEventListener("click", function () {
+
+        const isOpen = header.classList.toggle("open");
+
+        toggle.setAttribute("aria-expanded", isOpen);
+        toggle.innerHTML = isOpen ? "&times;" : "&#9776;";
 
     });
 

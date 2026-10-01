@@ -1,5 +1,4 @@
 .env
 messages.txt
-vendor/
-README.md.bak
 wget-log
+README.md.bak

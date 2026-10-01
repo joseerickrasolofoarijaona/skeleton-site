@@ -6,9 +6,9 @@ const siteContent = {
     },
 
     hero: {
-        label: "Honey Group",
-        title: "Des solutions web modernes pour vos projets",
-        description: "Nous concevons des sites web professionnels, rapides, responsives et facilement personnalisables."
+        label: "Skeleton web",
+        title: "Une base web moderne, modulaire et réutilisable",
+        description: "Une structure prête à être adaptée aux futurs projets de sites web."
     },
 
     services: [
@@ -16,7 +16,7 @@ const siteContent = {
         {
             id: "developpement",
             title: "Développement Web",
-            description: "Création de structures web modernes et facilement réutilisables.",
+            description: "Création de sites web modernes, responsives et adaptés aux besoins des clients.",
             details: "Nous développons des sites web modernes, structurés et adaptés aux besoins de chaque projet. Notre approche permet de créer une base solide, facile à personnaliser et à faire évoluer.",
             button: "En savoir plus"
         },
@@ -24,16 +24,16 @@ const siteContent = {
         {
             id: "responsive",
             title: "Design Responsive",
-            description: "Conception d'interfaces adaptées aux ordinateurs, tablettes et smartphones.",
+            description: "Interfaces modernes et adaptées aux ordinateurs, tablettes et mobiles.",
             details: "Nous concevons des interfaces responsives qui s'adaptent automatiquement aux différentes tailles d'écran. Le site reste agréable à utiliser sur ordinateur, tablette et smartphone.",
-            button: "Découvrir"
+            button: "En savoir plus"
         },
 
         {
-            id: "maintenance",
-            title: "Maintenance",
-            description: "Organisation d'une base facilitant les futures modifications et évolutions.",
-            details: "Nous assurons la maintenance, les corrections et les mises à jour du site. La structure modulaire facilite l'ajout de nouvelles fonctionnalités et les modifications futures.",
+            id: "hebergement",
+            title: "Hébergement Web",
+            description: "Solutions d'hébergement fiables et adaptées aux besoins des projets web.",
+            details: "Nous proposons des solutions d'hébergement fiables, sécurisées et adaptées aux besoins de chaque projet web, avec un suivi et une maintenance réguliers.",
             button: "En savoir plus"
         }
 
