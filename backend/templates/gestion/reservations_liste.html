@@ -1,0 +1,58 @@
+{% extends "gestion/base_gestion.html" %}
+{% block title %}Réservations{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Réservations</h1>
+<p class="page-sub">Demandes reçues depuis le site : hôtels et véhicules.</p>
+
+<div class="tabs">
+    {% for o in onglets %}
+    <a href="{{ o.url }}" {% if o.actif %}class="on"{% endif %}>{{ o.libelle }} <span>{{ o.n }}</span></a>
+    {% endfor %}
+</div>
+
+<form method="get" class="filter-bar">
+    {% if statut %}<input type="hidden" name="statut" value="{{ statut }}">{% endif %}
+    <input type="search" name="q" value="{{ q }}" placeholder="Référence, nom, e-mail, hôtel, véhicule…">
+    <select name="type">
+        <option value="" {% if not genre %}selected{% endif %}>Hôtels et véhicules</option>
+        <option value="hotel" {% if genre == 'hotel' %}selected{% endif %}>Hôtels seulement</option>
+        <option value="vehicule" {% if genre == 'vehicule' %}selected{% endif %}>Véhicules seulement</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
+    <a href="{% url 'gestion:reservations' %}" class="btn btn-outline btn-sm">Réinitialiser</a>
+</form>
+
+<div class="table-wrap">
+    <table class="manage-table">
+        <thead>
+            <tr><th>Référence</th><th>Type</th><th>Sujet</th><th>Période</th><th>Client</th><th class="num">Total estimé</th><th>Statut</th><th>Reçue le</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for l in page %}
+            <tr>
+                <td><strong>{{ l.reference }}</strong></td>
+                <td><span class="chip chip-{{ l.genre }}">{{ l.genre_label }}</span></td>
+                <td>{{ l.sujet }}</td>
+                <td>{{ l.periode }}</td>
+                <td>{{ l.client }}</td>
+                <td class="num">{{ l.total|floatformat:"0g" }} Ar</td>
+                <td><span class="statut statut-{{ l.statut }}">{{ l.statut_label }}</span></td>
+                <td>{{ l.cree_le|date:"d/m/Y H:i" }}</td>
+                <td class="actions"><a href="{% url 'gestion:reservation_detail' l.reference %}" class="btn btn-primary btn-sm">Ouvrir</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="9">Aucune demande ne correspond à ces critères.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page.has_other_pages %}
+<div class="pager">
+    {% if page.has_previous %}<a href="?{{ base_qs }}{% if base_qs %}&amp;{% endif %}page={{ page.previous_page_number }}" class="btn btn-outline btn-sm">&larr; Précédent</a>{% endif %}
+    <span>Page {{ page.number }} sur {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}<a href="?{{ base_qs }}{% if base_qs %}&amp;{% endif %}page={{ page.next_page_number }}" class="btn btn-outline btn-sm">Suivant &rarr;</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

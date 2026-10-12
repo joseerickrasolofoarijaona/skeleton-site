@@ -1,0 +1,36 @@
+{% extends "gestion/base_gestion.html" %}
+{% block title %}{{ titre }}{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="{% url 'gestion:hotels' %}">Hôtels</a> &rsaquo; {{ titre }}</p>
+<h1 class="page-title">{{ titre }}</h1>
+
+<form method="post" class="form-card">
+    {% csrf_token %}
+    {% for e in form.non_field_errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+
+    {% for field in form %}
+    {% if field.name != 'equipements' %}
+    <div class="form-group">
+        {{ field.label_tag }}
+        {{ field }}
+        {% for e in field.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    <fieldset class="form-group">
+        <legend>Équipements</legend>
+        <div class="checkbox-grid">
+            {% for cb in form.equipements %}
+            <label class="check">{{ cb.tag }} {{ cb.choice_label }}</label>
+            {% endfor %}
+        </div>
+    </fieldset>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-secondary">Enregistrer</button>
+        <a href="{% url 'gestion:hotels' %}" class="btn btn-outline">Annuler</a>
+    </div>
+</form>
+{% endblock %}

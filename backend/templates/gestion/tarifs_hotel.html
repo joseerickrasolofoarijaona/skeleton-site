@@ -1,0 +1,65 @@
+{% extends "gestion/base_gestion.html" %}
+{% block title %}Tarifs - {{ hotel.nom }}{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="{% url 'gestion:tarifs' %}">Tarifs</a> &rsaquo; {{ hotel.nom }}</p>
+<h1 class="page-title">Tarifs : {{ hotel.nom }}</h1>
+<p class="page-sub">{{ hotel.localisation }}{% if hotel.categorie %} &middot; {{ hotel.categorie }}{% endif %}</p>
+
+<form method="post" class="form-card wide">
+    {% csrf_token %}<input type="hidden" name="section" value="chambres">
+    <h2>1. Types de chambre</h2>
+    <p class="hint">Pour supprimer une ligne, cochez « Supprimer » puis enregistrez. Une chambre déjà utilisée par une cotation ne peut pas être supprimée.</p>
+    {% include "gestion/_formset_table.html" with formset=fs_chambres %}
+    <div class="form-actions"><button type="submit" class="btn btn-secondary">Enregistrer les chambres</button></div>
+</form>
+
+<form method="post" class="form-card wide">
+    {% csrf_token %}<input type="hidden" name="section" value="saisons">
+    <h2>2. Saisons</h2>
+    <p class="hint">Les périodes de l'année qui ont des prix différents (haute saison, basse saison…).</p>
+    {% include "gestion/_formset_table.html" with formset=fs_saisons %}
+    <div class="form-actions"><button type="submit" class="btn btn-secondary">Enregistrer les saisons</button></div>
+</form>
+
+<section class="form-card wide">
+    <h2>3. Prix de la nuitée (Ar)</h2>
+    <p class="hint">Un prix par type de chambre et par saison. Une case vide supprime le prix. Modifier un prix ne change pas les cotations déjà enregistrées.</p>
+    {% if colonnes and lignes %}
+    <form method="post">
+        {% csrf_token %}<input type="hidden" name="section" value="prix">
+        <div class="table-wrap">
+            <table class="manage-table mini">
+                <thead>
+                    <tr>
+                        <th>Type de chambre</th>
+                        {% for s in colonnes %}<th>{{ s.libelle }}<br><small>{{ s.date_debut|date:"d/m/Y" }} au {{ s.date_fin|date:"d/m/Y" }}</small></th>{% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for l in lignes %}
+                    <tr>
+                        <td><strong>{{ l.chambre.libelle }}</strong> <small>({{ l.chambre.capacite }} pers.)</small></td>
+                        {% for c in l.cellules %}
+                        <td><input type="text" inputmode="decimal" class="price-input" name="{{ c.nom }}" value="{{ c.valeur }}" placeholder="—"></td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="form-actions"><button type="submit" class="btn btn-secondary">Enregistrer les prix</button></div>
+    </form>
+    {% else %}
+    <p class="empty">Ajoutez d'abord au moins un type de chambre et une saison, puis enregistrez : la grille apparaîtra ici.</p>
+    {% endif %}
+</section>
+
+<form method="post" class="form-card wide">
+    {% csrf_token %}<input type="hidden" name="section" value="supplements">
+    <h2>4. Suppléments de pension</h2>
+    <p class="hint">Prix ajouté à chaque nuit (petit-déjeuner, demi-pension, pension complète…).</p>
+    {% include "gestion/_formset_table.html" with formset=fs_supp %}
+    <div class="form-actions"><button type="submit" class="btn btn-secondary">Enregistrer les suppléments</button></div>
+</form>
+{% endblock %}

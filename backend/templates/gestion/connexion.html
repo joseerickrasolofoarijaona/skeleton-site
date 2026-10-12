@@ -1,0 +1,47 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Honey Group</title>
+    <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/gestion.css' %}">
+</head>
+<body class="login-page">
+
+<main class="login-card">
+    <h1>Honey Group</h1>
+    <p class="login-sub">Espace de gestion</p>
+
+    <form method="post" autocomplete="off">
+        {% csrf_token %}
+        {% for e in form.non_field_errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+
+        <div class="form-group">
+            <label for="id_username">Nom d'utilisateur</label>
+            <input type="text" name="username" id="id_username" autofocus required
+                   autocomplete="off" value="{{ form.username.value|default:'' }}">
+        </div>
+        <div class="form-group">
+            <label for="id_password">Mot de passe</label>
+            <input type="password" name="password" id="id_password" required autocomplete="new-password">
+            <label class="check show-pass">
+                <input type="checkbox" id="show_pass"> Afficher le mot de passe
+            </label>
+        </div>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" class="btn btn-secondary btn-block">Se connecter</button>
+    </form>
+
+    <a class="login-back" href="{% url 'hotels:liste' %}">&larr; Retour au site</a>
+</main>
+
+<script>
+    document.getElementById("show_pass").addEventListener("change", function () {
+        document.getElementById("id_password").type = this.checked ? "text" : "password";
+    });
+</script>
+</body>
+</html>

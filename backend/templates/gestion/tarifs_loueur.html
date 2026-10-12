@@ -1,0 +1,54 @@
+{% extends "gestion/base_gestion.html" %}
+{% block title %}Tarifs - {{ loueur.nom }}{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="{% url 'gestion:tarifs' %}">Tarifs</a> &rsaquo; {{ loueur.nom }}</p>
+<h1 class="page-title">Tarifs : {{ loueur.nom }}</h1>
+<p class="page-sub">{{ loueur.localisation|default:"" }}</p>
+
+<form method="post" class="form-card wide">
+    {% csrf_token %}<input type="hidden" name="section" value="saisons">
+    <h2>1. Saisons</h2>
+    <p class="hint">Pour supprimer une ligne, cochez « Supprimer » puis enregistrez. Une saison déjà utilisée par une cotation ne peut pas être supprimée.</p>
+    {% include "gestion/_formset_table.html" with formset=fs_saisons %}
+    <div class="form-actions"><button type="submit" class="btn btn-secondary">Enregistrer les saisons</button></div>
+</form>
+
+<section class="form-card wide">
+    <h2>2. Prix journalier (Ar)</h2>
+    <p class="hint">Un prix par véhicule, par saison, avec ou sans chauffeur. Une case vide supprime le prix. Modifier un prix ne change pas les cotations déjà enregistrées.</p>
+    {% if colonnes and lignes %}
+    <form method="post">
+        {% csrf_token %}<input type="hidden" name="section" value="prix">
+        <div class="table-wrap">
+            <table class="manage-table mini">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Véhicule</th>
+                        {% for s in colonnes %}<th colspan="2" class="center">{{ s.libelle }}<br><small>{{ s.date_debut|date:"d/m/Y" }} au {{ s.date_fin|date:"d/m/Y" }}</small></th>{% endfor %}
+                    </tr>
+                    <tr>
+                        {% for s in colonnes %}<th>Avec chauffeur</th><th>Sans chauffeur</th>{% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for l in lignes %}
+                    <tr>
+                        <td><strong>{{ l.vehicule.modele }}</strong> <small>({{ l.vehicule.categorie }})</small></td>
+                        {% for c in l.cellules %}
+                        <td><input type="text" inputmode="decimal" class="price-input" name="{{ c.nom }}" value="{{ c.valeur }}" placeholder="—"></td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="form-actions"><button type="submit" class="btn btn-secondary">Enregistrer les prix</button></div>
+    </form>
+    {% elif not colonnes %}
+    <p class="empty">Ajoutez d'abord au moins une saison, puis enregistrez : la grille apparaîtra ici.</p>
+    {% else %}
+    <p class="empty">Ce loueur n'a pas encore de véhicule. Ajoutez-en dans le menu « Véhicules ».</p>
+    {% endif %}
+</section>
+{% endblock %}

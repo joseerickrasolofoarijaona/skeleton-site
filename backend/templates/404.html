@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Page introuvable - Honey Group{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <p class="breadcrumb">Erreur 404</p>
+        <h1>Page introuvable</h1>
+        <p>La page que vous cherchez n'existe pas ou a été déplacée.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <p>Vous pouvez poursuivre votre recherche :</p>
+        <p class="quote-actions">
+            <a class="btn btn-secondary" href="{% url 'hotels:liste' %}">Voir les hôtels</a>
+            <a class="btn btn-primary" href="{% url 'vehicules:liste' %}">Voir les véhicules</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

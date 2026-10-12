@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}{{ vehicule.modele }} - Honey Group{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <p class="breadcrumb"><a href="{% url 'vehicules:liste' %}">Véhicules</a> &rsaquo; {{ vehicule.modele }}</p>
+        <h1>{{ vehicule.modele }}</h1>
+        <p>{{ vehicule.loueur.nom }} &middot; {{ vehicule.categorie }}</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container detail-layout">
+
+        <div class="detail-main">
+
+            {% if resultat %}
+            <section class="quote-result" id="cotation">
+                <div class="quote-head">
+                    <h2>Votre cotation</h2>
+                    <span>{{ resultat.jours }} jour{{ resultat.jours|pluralize }} &middot; {{ resultat.nb_vehicules }} véhicule{{ resultat.nb_vehicules|pluralize }}</span>
+                </div>
+                <p class="quote-sub">
+                    {{ vehicule.modele }} &middot; {{ vehicule.loueur.nom }}<br>
+                    Du {{ resultat.debut|date:"d/m/Y" }} au {{ resultat.fin|date:"d/m/Y" }}
+                    &middot; {% if resultat.avec_chauffeur %}avec chauffeur{% else %}sans chauffeur{% endif %}
+                </p>
+                <div class="table-scroll">
+                    <table class="price-table">
+                        <thead>
+                            <tr><th>Détail</th><th>Jours</th><th>Prix / jour</th><th class="num">Montant</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for l in resultat.lignes %}
+                            <tr>
+                                <td>{{ l.saison }} <small>({{ l.du|date:"d/m" }} → {{ l.au|date:"d/m" }})</small></td>
+                                <td>{{ l.jours }}</td>
+                                <td>{{ l.prix|floatformat:"0g" }} Ar</td>
+                                <td class="num">{{ l.montant|floatformat:"0g" }} Ar</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr><td colspan="3">Total</td><td class="num">{{ resultat.total|floatformat:"0g" }} Ar</td></tr>
+                        </tfoot>
+                    </table>
+                </div>
+                {% if resultat.nb_vehicules > 1 %}
+                <p class="quote-note">Les montants sont calculés pour {{ resultat.nb_vehicules }} véhicules.</p>
+                {% endif %}
+                <p class="quote-note">Les jours de début et de fin sont comptés. Cotation indicative, valable sous réserve de disponibilité.</p>
+                {% if resultat.dispo.disponible %}<p class="dispo-badge dispo-ok">✓ Disponible pour ces dates</p>{% else %}<p class="dispo-badge dispo-no">✗ {{ resultat.dispo.message }}</p>{% endif %}
+                <div class="quote-actions no-print">
+                    {% if resultat.dispo.disponible %}<a href="{% url 'vehicules:reserver' vehicule.id %}?{{ request.GET.urlencode }}" class="btn btn-secondary">Demander cette réservation</a>{% endif %}
+                    <button type="button" class="btn btn-primary btn-sm" onclick="window.print()">Imprimer la cotation</button>
+                </div>
+            </section>
+            {% endif %}
+
+            <section class="detail-block">
+                <h2>Caractéristiques</h2>
+                <div class="badges">
+                    <span class="badge">{{ vehicule.categorie }}</span>
+                    <span class="badge">{{ vehicule.capacite_passagers }} places</span>
+                    {% if vehicule.climatisation %}<span class="badge">Climatisé</span>{% endif %}
+                    {% if vehicule.loueur.localisation %}<span class="badge">{{ vehicule.loueur.localisation }}</span>{% endif %}
+                </div>
+                {% if vehicule.remarques %}<p class="detail-text">{{ vehicule.remarques }}</p>{% endif %}
+            </section>
+
+            <section class="detail-block">
+                <h2>Tarifs journaliers <small>(en Ar)</small></h2>
+                {% if grille %}
+                <div class="table-scroll">
+                    <table class="price-table">
+                        <thead>
+                            <tr><th>Saison</th><th class="num">Avec chauffeur</th><th class="num">Sans chauffeur</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for row in grille %}
+                            <tr>
+                                <td><strong>{{ row.saison.libelle }}</strong> <small>({{ row.saison.date_debut|date:"d/m/Y" }} au {{ row.saison.date_fin|date:"d/m/Y" }})</small></td>
+                                <td class="num">{% if row.avec %}{{ row.avec|floatformat:"0g" }}{% else %}—{% endif %}</td>
+                                <td class="num">{% if row.sans %}{{ row.sans|floatformat:"0g" }}{% else %}—{% endif %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="empty">Les tarifs de ce véhicule ne sont pas encore renseignés.</p>
+                {% endif %}
+            </section>
+
+            <section class="detail-block">
+                <h2>Loueur</h2>
+                <p><strong>{{ vehicule.loueur.nom }}</strong>{% if vehicule.loueur.localisation %} &middot; {{ vehicule.loueur.localisation }}{% endif %}</p>
+                {% if vehicule.loueur.telephone %}<p>{{ vehicule.loueur.telephone }}</p>{% endif %}
+                {% if vehicule.loueur.email %}<p>{{ vehicule.loueur.email }}</p>{% endif %}
+            </section>
+        </div>
+
+        <aside class="detail-side">
+            <form class="filters" method="get" action="#cotation">
+                <h2>Calculer le prix</h2>
+                {% for e in form.non_field_errors %}<p class="form-error">{{ e }}</p>{% endfor %}
+
+                <div class="form-group">
+                    <label for="{{ form.debut.id_for_label }}">{{ form.debut.label }}</label>
+                    {{ form.debut }}
+                    {% for e in form.debut.errors %}<p class="form-error">{{ e }}</p>{% endfor %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.fin.id_for_label }}">{{ form.fin.label }}</label>
+                    {{ form.fin }}
+                    {% for e in form.fin.errors %}<p class="form-error">{{ e }}</p>{% endfor %}
+                </div>
+                <fieldset class="form-group">
+                    <legend>{{ form.chauffeur.label }}</legend>
+                    {% for radio in form.chauffeur %}
+                    <label class="check">{{ radio.tag }} {{ radio.choice_label }}</label>
+                    {% endfor %}
+                    {% for e in form.chauffeur.errors %}<p class="form-error">{{ e }}</p>{% endfor %}
+                </fieldset>
+                <div class="form-group">
+                    <label for="{{ form.nb_vehicules.id_for_label }}">{{ form.nb_vehicules.label }}</label>
+                    {{ form.nb_vehicules }}
+                    {% for e in form.nb_vehicules.errors %}<p class="form-error">{{ e }}</p>{% endfor %}
+                </div>
+
+                <button type="submit" class="btn btn-secondary">Calculer le prix</button>
+                <a href="{% url 'vehicules:detail' vehicule.id %}" class="reset-link">Réinitialiser</a>
+            </form>
+        </aside>
+
+    </div>
+</section>
+{% endblock %}

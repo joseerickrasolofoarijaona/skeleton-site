@@ -1,0 +1,19 @@
+<article class="result-card">
+    <div class="banner">
+        <span class="tag">{{ v.categorie }}</span>
+        <h3>{{ v.modele }}</h3>
+        <p>{{ v.loueur.nom }}</p>
+    </div>
+    <div class="body">
+        <div class="badges">
+            <span class="badge">{{ v.capacite_passagers }} places</span>
+            {% if v.climatisation %}<span class="badge">Climatisé</span>{% endif %}
+            {% if v.loueur.localisation %}<span class="badge">{{ v.loueur.localisation }}</span>{% endif %}
+        </div>
+        {% if v.prix_min %}
+        <p class="price">À partir de <strong>{{ v.prix_min|floatformat:"0g" }} Ar</strong> / jour</p>
+        {% endif %}
+        {% if v.loueur.telephone %}<p class="meta">{{ v.loueur.telephone }}</p>{% endif %}
+        <a href="{% url 'vehicules:detail' v.id %}" class="btn btn-secondary btn-sm card-cta">Voir et calculer le prix</a>
+    </div>
+</article>

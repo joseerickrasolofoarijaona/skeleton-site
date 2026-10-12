@@ -1,0 +1,51 @@
+{% extends "gestion/base_gestion.html" %}
+{% block title %}Hôtels{% endblock %}
+
+{% block content %}
+<div class="title-row">
+    <div>
+        <h1 class="page-title">Hôtels</h1>
+        <p class="page-sub">{{ nb_actifs }} en service &middot; {{ nb_archives }} archivé{{ nb_archives|pluralize }}</p>
+    </div>
+    <a href="{% url 'gestion:hotel_ajouter' %}" class="btn btn-secondary">+ Ajouter un hôtel</a>
+</div>
+
+<div class="table-wrap">
+    <table class="manage-table">
+        <thead>
+            <tr><th>Hôtel</th><th>Destination</th><th>Catégorie</th><th>Statut</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for h in hotels %}
+            <tr {% if not h.actif %}class="row-archived"{% endif %}>
+                <td><strong>{{ h.nom }}</strong></td>
+                <td>{{ h.localisation }}</td>
+                <td>{{ h.categorie|default:"—" }}</td>
+                <td>
+                    {% if h.actif %}<span class="status status-on">En service</span>
+                    {% else %}<span class="status status-off">Archivé</span>{% endif %}
+                </td>
+                <td class="actions">
+                    <a href="{% url 'gestion:tarifs_hotel' h.id %}" class="btn btn-secondary btn-sm">Tarifs</a>
+                    <a href="{% url 'gestion:hotel_modifier' h.id %}" class="btn btn-primary btn-sm">Modifier</a>
+                    {% if h.actif %}
+                    <form method="post" action="{% url 'gestion:hotel_archiver' h.id %}"
+                          onsubmit="return confirm('Archiver cet hôtel ? Il ne sera plus visible dans la recherche.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-brown btn-sm">Archiver</button>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{% url 'gestion:hotel_restaurer' h.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary btn-sm">Restaurer</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">Aucun hôtel pour l'instant.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "gestion/base_gestion.html" %}
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Tableau de bord</h1>
+<p class="page-sub">Vue d'ensemble des partenaires et des demandes.</p>
+
+<div class="stat-grid">
+    <a class="stat-card stat-orange" href="{% url 'gestion:reservations' %}?statut=en_attente">
+        <span class="stat-label">Demandes en attente</span>
+        <span class="stat-number">{{ nb_en_attente }}</span>
+        <span class="stat-note">{{ nb_confirmees }} confirmée{{ nb_confirmees|pluralize }}</span>
+    </a>
+    <a class="stat-card stat-blue" href="{% url 'gestion:hotels' %}">
+        <span class="stat-label">Hôtels en service</span>
+        <span class="stat-number">{{ hotels_actifs }}</span>
+        <span class="stat-note">{{ hotels_archives }} archivé{{ hotels_archives|pluralize }}</span>
+    </a>
+    <a class="stat-card stat-brown" href="{% url 'gestion:vehicules' %}">
+        <span class="stat-label">Véhicules en service</span>
+        <span class="stat-number">{{ vehicules_actifs }}</span>
+        <span class="stat-note">{{ vehicules_archives }} archivé{{ vehicules_archives|pluralize }}</span>
+    </a>
+    <a class="stat-card stat-black" href="{% url 'gestion:loueurs' %}">
+        <span class="stat-label">Loueurs partenaires</span>
+        <span class="stat-number">{{ loueurs_actifs }}</span>
+        <span class="stat-note">en service</span>
+    </a>
+</div>
+
+<h2 class="block-title">Dernières demandes en attente</h2>
+{% if recentes %}
+<div class="table-wrap">
+    <table class="manage-table">
+        <thead><tr><th>Référence</th><th>Type</th><th>Sujet</th><th>Période</th><th>Client</th><th>Reçue le</th><th></th></tr></thead>
+        <tbody>
+            {% for l in recentes %}
+            <tr>
+                <td><strong>{{ l.reference }}</strong></td>
+                <td><span class="chip chip-{{ l.genre }}">{{ l.genre_label }}</span></td>
+                <td>{{ l.sujet }}</td>
+                <td>{{ l.periode }}</td>
+                <td>{{ l.client }}</td>
+                <td>{{ l.cree_le|date:"d/m/Y H:i" }}</td>
+                <td class="actions"><a href="{% url 'gestion:reservation_detail' l.reference %}" class="btn btn-primary btn-sm">Ouvrir</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="empty">Aucune demande en attente. Bravo !</p>
+{% endif %}
+
+<h2 class="block-title">Accès rapide</h2>
+<div class="quick-actions">
+    <a href="{% url 'gestion:reservations' %}" class="btn btn-secondary">Voir les réservations</a>
+    <a href="{% url 'gestion:hotel_ajouter' %}" class="btn btn-primary">+ Ajouter un hôtel</a>
+    <a href="{% url 'gestion:vehicule_ajouter' %}" class="btn btn-primary">+ Ajouter un véhicule</a>
+    <a href="{% url 'gestion:tarifs' %}" class="btn btn-brown">Gérer les tarifs</a>
+</div>
+{% endblock %}

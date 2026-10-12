@@ -1,0 +1,29 @@
+{% extends "gestion/base_gestion.html" %}
+{% block title %}{{ titre }}{% endblock %}
+
+{% block content %}
+<p class="breadcrumb"><a href="{{ retour_url }}">{{ retour_nom }}</a> &rsaquo; {{ titre }}</p>
+<h1 class="page-title">{{ titre }}</h1>
+
+<form method="post" class="form-card">
+    {% csrf_token %}
+    {% for e in form.non_field_errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+
+    {% for field in form %}
+    <div class="form-group">
+        {% if field.field.widget.input_type == 'checkbox' %}
+        <label class="check">{{ field }} {{ field.label }}</label>
+        {% else %}
+        {{ field.label_tag }}
+        {{ field }}
+        {% endif %}
+        {% for e in field.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+    </div>
+    {% endfor %}
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-secondary">Enregistrer</button>
+        <a href="{{ retour_url }}" class="btn btn-outline">Annuler</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "gestion/base_gestion.html" %}
+{% block title %}Loueurs{% endblock %}
+
+{% block content %}
+<div class="title-row">
+    <div>
+        <h1 class="page-title">Loueurs</h1>
+        <p class="page-sub">{{ nb_actifs }} en service &middot; {{ nb_archives }} archivé{{ nb_archives|pluralize }}</p>
+    </div>
+    <a href="{% url 'gestion:loueur_ajouter' %}" class="btn btn-secondary">+ Ajouter un loueur</a>
+</div>
+
+<div class="table-wrap">
+    <table class="manage-table">
+        <thead>
+            <tr><th>Loueur</th><th>Ville</th><th>Contact</th><th>Véhicules</th><th>Statut</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for l in loueurs %}
+            <tr {% if not l.actif %}class="row-archived"{% endif %}>
+                <td><strong>{{ l.nom }}</strong></td>
+                <td>{{ l.localisation|default:"—" }}</td>
+                <td>{{ l.telephone|default:"—" }}{% if l.email %}<br>{{ l.email }}{% endif %}</td>
+                <td>{{ l.nb_vehicules }}</td>
+                <td>
+                    {% if l.actif %}<span class="status status-on">En service</span>
+                    {% else %}<span class="status status-off">Archivé</span>{% endif %}
+                </td>
+                <td class="actions">
+                    <a href="{% url 'gestion:tarifs_loueur' l.id %}" class="btn btn-secondary btn-sm">Tarifs</a>
+                    <a href="{% url 'gestion:loueur_modifier' l.id %}" class="btn btn-primary btn-sm">Modifier</a>
+                    {% if l.actif %}
+                    <form method="post" action="{% url 'gestion:loueur_archiver' l.id %}"
+                          onsubmit="return confirm('Archiver ce loueur ? Ses véhicules ne seront plus visibles dans la recherche.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-brown btn-sm">Archiver</button>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{% url 'gestion:loueur_restaurer' l.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary btn-sm">Restaurer</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">Aucun loueur pour l'instant.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

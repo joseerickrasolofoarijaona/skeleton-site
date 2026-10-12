@@ -1,0 +1,49 @@
+{% extends "gestion/base_gestion.html" %}
+{% block title %}Tarifs{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Tarifs</h1>
+<p class="page-sub">Choisissez un partenaire pour modifier ses chambres, ses saisons et ses prix.</p>
+
+<h2 class="block-title">Hôtels</h2>
+<div class="table-wrap">
+    <table class="manage-table">
+        <thead><tr><th>Hôtel</th><th>Destination</th><th>Types de chambre</th><th>Saisons</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for h in hotels %}
+            <tr {% if not h.actif %}class="row-archived"{% endif %}>
+                <td><strong>{{ h.nom }}</strong></td>
+                <td>{{ h.localisation }}</td>
+                <td>{{ h.nb_chambres }}</td>
+                <td>{{ h.nb_saisons }}</td>
+                <td>{% if h.actif %}<span class="status status-on">En service</span>{% else %}<span class="status status-off">Archivé</span>{% endif %}</td>
+                <td class="actions"><a href="{% url 'gestion:tarifs_hotel' h.id %}" class="btn btn-secondary btn-sm">Gérer les tarifs</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">Aucun hôtel.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<h2 class="block-title">Loueurs de véhicules</h2>
+<div class="table-wrap">
+    <table class="manage-table">
+        <thead><tr><th>Loueur</th><th>Ville</th><th>Véhicules</th><th>Saisons</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for l in loueurs %}
+            <tr {% if not l.actif %}class="row-archived"{% endif %}>
+                <td><strong>{{ l.nom }}</strong></td>
+                <td>{{ l.localisation|default:"—" }}</td>
+                <td>{{ l.nb_vehicules }}</td>
+                <td>{{ l.nb_saisons }}</td>
+                <td>{% if l.actif %}<span class="status status-on">En service</span>{% else %}<span class="status status-off">Archivé</span>{% endif %}</td>
+                <td class="actions"><a href="{% url 'gestion:tarifs_loueur' l.id %}" class="btn btn-secondary btn-sm">Gérer les tarifs</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">Aucun loueur.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

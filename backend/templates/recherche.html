@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Recherche - Honey Group{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <p class="breadcrumb">Accueil &rsaquo; Recherche</p>
+        {% if q %}
+        <h1>Résultats pour « {{ q }} »</h1>
+        <p>{{ total }} résultat{{ total|pluralize }} dans les hôtels et les véhicules.</p>
+        {% else %}
+        <h1>Recherche</h1>
+        <p>Tapez un mot dans la barre du haut : un hôtel, une destination, un type de véhicule…</p>
+        {% endif %}
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+
+        {% if q and total == 0 %}
+        <p class="empty">Aucun résultat. Essayez un autre mot, par exemple « Nosy Be », « 4x4 » ou « piscine ».</p>
+        {% endif %}
+
+        {% if hotels %}
+        <h2 class="group-title">Hôtels <span>({{ hotels|length }})</span></h2>
+        <div class="result-grid">
+            {% for h in hotels %}
+            {% include "partials/carte_hotel.html" %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if vehicules %}
+        <h2 class="group-title">Véhicules <span>({{ vehicules|length }})</span></h2>
+        <div class="result-grid">
+            {% for v in vehicules %}
+            {% include "partials/carte_vehicule.html" %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

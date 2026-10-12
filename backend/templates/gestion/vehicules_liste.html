@@ -1,0 +1,55 @@
+{% extends "gestion/base_gestion.html" %}
+{% block title %}Véhicules{% endblock %}
+
+{% block content %}
+<div class="title-row">
+    <div>
+        <h1 class="page-title">Véhicules</h1>
+        <p class="page-sub">{{ nb_actifs }} en service &middot; {{ nb_archives }} archivé{{ nb_archives|pluralize }}</p>
+    </div>
+    <a href="{% url 'gestion:vehicule_ajouter' %}" class="btn btn-secondary">+ Ajouter un véhicule</a>
+</div>
+
+<div class="table-wrap">
+    <table class="manage-table">
+        <thead>
+            <tr><th>Véhicule</th><th>Loueur</th><th>Type</th><th>Places</th><th>Clim.</th><th>Statut</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for v in vehicules %}
+            <tr {% if not v.actif %}class="row-archived"{% endif %}>
+                <td><strong>{{ v.modele }}</strong></td>
+                <td>
+                    {{ v.loueur.nom }}
+                    {% if not v.loueur.actif %}<span class="status status-off">Loueur archivé</span>{% endif %}
+                </td>
+                <td>{{ v.categorie }}</td>
+                <td>{{ v.capacite_passagers }}</td>
+                <td>{% if v.climatisation %}Oui{% else %}Non{% endif %}</td>
+                <td>
+                    {% if v.actif %}<span class="status status-on">En service</span>
+                    {% else %}<span class="status status-off">Archivé</span>{% endif %}
+                </td>
+                <td class="actions">
+                    <a href="{% url 'gestion:vehicule_modifier' v.id %}" class="btn btn-primary btn-sm">Modifier</a>
+                    {% if v.actif %}
+                    <form method="post" action="{% url 'gestion:vehicule_archiver' v.id %}"
+                          onsubmit="return confirm('Archiver ce véhicule ? Il ne sera plus visible dans la recherche.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-brown btn-sm">Archiver</button>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{% url 'gestion:vehicule_restaurer' v.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary btn-sm">Restaurer</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7">Aucun véhicule pour l'instant.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

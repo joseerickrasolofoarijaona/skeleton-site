@@ -1,0 +1,19 @@
+<article class="result-card">
+    <div class="banner">
+        <span class="tag">{% if h.categorie %}★ {{ h.categorie }}{% else %}Hôtel{% endif %}</span>
+        <h3>{{ h.nom }}</h3>
+        <p>{{ h.localisation }}</p>
+    </div>
+    <div class="body">
+        <div class="badges">
+            {% for libelle in h.liste_equipements %}
+            <span class="badge">{{ libelle }}</span>
+            {% endfor %}
+        </div>
+        {% if h.prix_min %}
+        <p class="price">À partir de <strong>{{ h.prix_min|floatformat:"0g" }} Ar</strong> / nuit</p>
+        {% endif %}
+        {% if h.contact %}<p class="meta">{{ h.contact }}</p>{% endif %}
+        <a href="{% url 'hotels:detail' h.id %}" class="btn btn-secondary btn-sm card-cta">Voir et calculer le prix</a>
+    </div>
+</article>

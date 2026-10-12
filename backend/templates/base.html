@@ -1,0 +1,66 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Honey Group{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/recherche.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+</head>
+<body>
+
+<header class="site-header">
+    <nav class="navbar">
+        {# Adresse du site vitrine (serveur PHP du skeleton) #}
+        <a href="http://127.0.0.1:8000/index.html" class="logo">Honey Group</a>
+
+        <form class="site-search" action="{% url 'recherche' %}" method="get" role="search">
+            <input type="search" name="q" value="{{ q|default:'' }}"
+                   placeholder="Rechercher un hôtel, un véhicule, une destination…"
+                   aria-label="Rechercher sur le site">
+            <button type="submit">Rechercher</button>
+        </form>
+
+        <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false">&#9776;</button>
+
+        <ul class="nav-menu">
+            <li><a href="{% url 'hotels:liste' %}"
+                   {% if request.resolver_match.app_name == 'hotels' %}class="active"{% endif %}>Hôtels</a></li>
+            <li><a href="{% url 'vehicules:liste' %}"
+                   {% if request.resolver_match.app_name == 'vehicules' %}class="active"{% endif %}>Véhicules</a></li>
+            <li><a href="http://127.0.0.1:8000/index.html">Site vitrine</a></li>
+        </ul>
+        <a href="http://127.0.0.1:8000/pages/contact.html" class="btn btn-primary btn-sm nav-cta">Demande un devis</a>
+    </nav>
+</header>
+
+<main>
+{% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p class="footer-logo">Honey Group</p>
+        <p class="footer-copy">
+            &copy; 2026 Honey Group — Tous droits réservés
+            &nbsp;&middot;&nbsp;
+            <a href="{% url 'gestion:tableau_de_bord' %}" class="footer-link">Espace professionnel</a>
+        </p>
+    </div>
+</footer>
+
+<script>
+    // Menu mobile (même comportement que le skeleton)
+    var header = document.querySelector(".site-header");
+    var toggle = document.getElementById("nav-toggle");
+    toggle.addEventListener("click", function () {
+        var open = header.classList.toggle("open");
+        toggle.setAttribute("aria-expanded", open);
+        toggle.innerHTML = open ? "&times;" : "&#9776;";
+    });
+</script>
+</body>
+</html>

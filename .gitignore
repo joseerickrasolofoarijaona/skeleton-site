@@ -5,3 +5,7 @@ README.md.bak
 .env
 messages.txt
 vendor/
+backend/venv/
+__pycache__/
+*.pyc
+db.sqlite3

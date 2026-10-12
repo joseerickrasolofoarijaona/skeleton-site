@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Hôtels partenaires - Honey Group{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <p class="breadcrumb">Accueil &rsaquo; Hôtels</p>
+        <h1>Hôtels partenaires</h1>
+        <p>Trouvez l'hébergement adapté : destination, catégorie et équipements.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container search-layout">
+
+        <form class="filters" method="get">
+            <h2>Filtrer</h2>
+
+            <div class="form-group">
+                <label for="destination">Destination</label>
+                <select id="destination" name="destination">
+                    <option value="" disabled {% if not destination %}selected{% endif %}>Choisir une destination</option>
+                    {% for d in destinations %}
+                    <option value="{{ d }}" {% if d == destination %}selected{% endif %}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="categorie">Catégorie</label>
+                <select id="categorie" name="categorie">
+                    <option value="" disabled {% if not categorie %}selected{% endif %}>Choisir une catégorie</option>
+                    {% for c in categories %}
+                    <option value="{{ c }}" {% if c == categorie %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <fieldset class="form-group">
+                <legend>Équipements</legend>
+                {% for e in equipements %}
+                <label class="check">
+                    <input type="checkbox" name="equipement" value="{{ e.id }}"
+                           {% if e.id in equip_ids %}checked{% endif %}>
+                    {{ e.libelle }}
+                </label>
+                {% endfor %}
+            </fieldset>
+
+            <button type="submit" class="btn btn-secondary">Rechercher</button>
+            <a href="{% url 'hotels:liste' %}" class="reset-link">Réinitialiser</a>
+        </form>
+
+        <div class="results">
+            <p class="result-count">
+                {{ hotels|length }} hôtel{{ hotels|length|pluralize }}
+                trouvé{{ hotels|length|pluralize }}
+            </p>
+
+            {% if hotels %}
+            <div class="result-grid">
+                {% for h in hotels %}
+                {% include "partials/carte_hotel.html" %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="empty">Aucun hôtel ne correspond à votre recherche.</p>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+{% endblock %}
