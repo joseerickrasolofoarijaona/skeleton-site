@@ -35,14 +35,10 @@ class VehiculeForm(forms.ModelForm):
     categorie = forms.ChoiceField(label="Type de véhicule")
     capacite_passagers = forms.IntegerField(
         min_value=1, max_value=100, label="Nombre de places")
-    nb_exemplaires = forms.IntegerField(
-        min_value=0, max_value=1000, initial=1,
-        label="Nombre d'exemplaires (stock)")
 
     class Meta:
         model = Vehicule
         fields = ["loueur", "modele", "categorie", "capacite_passagers",
-                  "nb_exemplaires",
                   "climatisation", "remarques"]
         labels = {
             "loueur": "Loueur",

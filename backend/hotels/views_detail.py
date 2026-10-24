@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 
 from .cotation import CotationError, calculer_cotation
-from .disponibilite import verifier
 from .forms_cotation import CotationHotelForm
 from .models import (
     Hotel, HotelEquipement, Saison, SupplementPension, Tarif, TypeChambre)
@@ -39,8 +38,6 @@ def detail_hotel(request, pk):
                 d["nb_chambres"], d["pension"])
             resultat.update(
                 chambre=d["type_chambre"], arrivee=d["arrivee"], depart=d["depart"])
-            resultat["dispo"] = verifier(
-                d["type_chambre"], d["arrivee"], d["depart"], d["nb_chambres"])
         except CotationError as e:
             form.add_error(None, str(e))
 

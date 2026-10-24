@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `equipement` (
   `libelle` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_equipement_libelle` (`libelle`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `hotel` (
   KEY `idx_hotel_localisation` (`localisation`),
   KEY `idx_hotel_categorie` (`categorie`),
   KEY `idx_hotel_actif` (`actif`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -76,44 +76,6 @@ CREATE TABLE IF NOT EXISTS `hotel_equipement` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE IF NOT EXISTS `reservation` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `reference` varchar(20) NOT NULL,
-  `id_hotel` int(10) unsigned NOT NULL,
-  `id_type_chambre` int(10) unsigned NOT NULL,
-  `id_supplement_pension` int(10) unsigned DEFAULT NULL,
-  `arrivee` date NOT NULL,
-  `depart` date NOT NULL,
-  `nb_chambres` smallint(5) unsigned NOT NULL,
-  `nb_personnes` smallint(5) unsigned NOT NULL,
-  `nom_client` varchar(150) NOT NULL,
-  `email_client` varchar(150) NOT NULL,
-  `telephone_client` varchar(50) DEFAULT NULL,
-  `message` text DEFAULT NULL,
-  `total_estime` decimal(14,2) NOT NULL,
-  `detail` text NOT NULL,
-  `statut` varchar(20) NOT NULL DEFAULT 'en_attente',
-  `note_equipe` text DEFAULT NULL,
-  `cree_le` datetime NOT NULL,
-  `modifie_le` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_resa_reference` (`reference`),
-  KEY `idx_resa_statut` (`statut`),
-  KEY `idx_resa_dates` (`arrivee`,`depart`),
-  KEY `idx_resa_hotel` (`id_hotel`),
-  KEY `fk_resa_type_chambre` (`id_type_chambre`,`id_hotel`),
-  KEY `fk_resa_supplement` (`id_supplement_pension`,`id_hotel`),
-  KEY `idx_resa_chambre_statut` (`id_type_chambre`,`statut`,`arrivee`,`depart`),
-  CONSTRAINT `fk_resa_hotel` FOREIGN KEY (`id_hotel`) REFERENCES `hotel` (`id`),
-  CONSTRAINT `fk_resa_supplement` FOREIGN KEY (`id_supplement_pension`, `id_hotel`) REFERENCES `supplement_pension` (`id`, `id_hotel`),
-  CONSTRAINT `fk_resa_type_chambre` FOREIGN KEY (`id_type_chambre`, `id_hotel`) REFERENCES `type_chambre` (`id`, `id_hotel`),
-  CONSTRAINT `ck_resa_dates` CHECK (`depart` > `arrivee`),
-  CONSTRAINT `ck_resa_nombres` CHECK (`nb_chambres` > 0 and `nb_personnes` > 0),
-  CONSTRAINT `ck_resa_statut` CHECK (`statut` in ('en_attente','confirmee','refusee','annulee'))
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE IF NOT EXISTS `saison` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_hotel` int(10) unsigned NOT NULL,
@@ -125,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `saison` (
   UNIQUE KEY `uq_saison_id_hotel` (`id`,`id_hotel`),
   CONSTRAINT `fk_saison_hotel` FOREIGN KEY (`id_hotel`) REFERENCES `hotel` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ck_saison_dates` CHECK (`date_fin` >= `date_debut`)
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -139,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `supplement_pension` (
   UNIQUE KEY `uq_sp_id_hotel` (`id`,`id_hotel`),
   CONSTRAINT `fk_sp_hotel` FOREIGN KEY (`id_hotel`) REFERENCES `hotel` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ck_sp_prix` CHECK (`prix_supplement` >= 0)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -154,7 +116,7 @@ CREATE TABLE IF NOT EXISTS `tarif` (
   CONSTRAINT `fk_tarif_saison` FOREIGN KEY (`id_saison`) REFERENCES `saison` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_tarif_type_chambre` FOREIGN KEY (`id_type_chambre`) REFERENCES `type_chambre` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ck_tarif_prix` CHECK (`prix_nuitee` >= 0)
-) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -163,13 +125,12 @@ CREATE TABLE IF NOT EXISTS `type_chambre` (
   `id_hotel` int(10) unsigned NOT NULL,
   `libelle` varchar(100) NOT NULL,
   `capacite` tinyint(3) unsigned NOT NULL,
-  `nb_chambres` smallint(5) unsigned NOT NULL DEFAULT 5,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_tc_hotel_libelle` (`id_hotel`,`libelle`),
   UNIQUE KEY `uq_tc_id_hotel` (`id`,`id_hotel`),
   CONSTRAINT `fk_tc_hotel` FOREIGN KEY (`id_hotel`) REFERENCES `hotel` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ck_tc_capacite` CHECK (`capacite` > 0)
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -226,41 +187,7 @@ CREATE TABLE IF NOT EXISTS `loueur` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_loueur_nom` (`nom`),
   KEY `idx_loueur_actif` (`actif`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE IF NOT EXISTS `reservation_vehicule` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `reference` varchar(20) NOT NULL,
-  `id_vehicule` int(10) unsigned NOT NULL,
-  `date_debut` date NOT NULL,
-  `date_fin` date NOT NULL,
-  `avec_chauffeur` tinyint(1) NOT NULL,
-  `nb_vehicules` smallint(5) unsigned NOT NULL,
-  `nb_personnes` smallint(5) unsigned NOT NULL,
-  `nom_client` varchar(150) NOT NULL,
-  `email_client` varchar(150) NOT NULL,
-  `telephone_client` varchar(50) DEFAULT NULL,
-  `message` text DEFAULT NULL,
-  `total_estime` decimal(14,2) NOT NULL,
-  `detail` text NOT NULL,
-  `statut` varchar(20) NOT NULL DEFAULT 'en_attente',
-  `note_equipe` text DEFAULT NULL,
-  `cree_le` datetime NOT NULL,
-  `modifie_le` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_resav_reference` (`reference`),
-  KEY `idx_resav_statut` (`statut`),
-  KEY `idx_resav_dates` (`date_debut`,`date_fin`),
-  KEY `idx_resav_vehicule` (`id_vehicule`),
-  KEY `idx_resav_vehicule_statut` (`id_vehicule`,`statut`,`date_debut`,`date_fin`),
-  CONSTRAINT `fk_resav_vehicule` FOREIGN KEY (`id_vehicule`) REFERENCES `vehicule` (`id`),
-  CONSTRAINT `ck_resav_dates` CHECK (`date_fin` >= `date_debut`),
-  CONSTRAINT `ck_resav_nombres` CHECK (`nb_vehicules` > 0 and `nb_personnes` > 0),
-  CONSTRAINT `ck_resav_chauffeur` CHECK (`avec_chauffeur` in (0,1)),
-  CONSTRAINT `ck_resav_statut` CHECK (`statut` in ('en_attente','confirmee','refusee','annulee'))
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -275,7 +202,7 @@ CREATE TABLE IF NOT EXISTS `saison_vehicule` (
   KEY `idx_sv_periode` (`date_debut`,`date_fin`),
   CONSTRAINT `fk_sv_loueur` FOREIGN KEY (`id_loueur`) REFERENCES `loueur` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ck_sv_dates` CHECK (`date_fin` >= `date_debut`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -292,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `tarif_vehicule` (
   CONSTRAINT `fk_tv_vehicule` FOREIGN KEY (`id_vehicule`) REFERENCES `vehicule` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ck_tv_prix` CHECK (`prix_journalier` >= 0),
   CONSTRAINT `ck_tv_chauffeur` CHECK (`inclus_chauffeur` in (0,1))
-) ENGINE=InnoDB AUTO_INCREMENT=109 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -302,7 +229,6 @@ CREATE TABLE IF NOT EXISTS `vehicule` (
   `modele` varchar(100) NOT NULL,
   `categorie` varchar(50) NOT NULL,
   `capacite_passagers` tinyint(3) unsigned NOT NULL,
-  `nb_exemplaires` smallint(5) unsigned NOT NULL DEFAULT 3,
   `climatisation` tinyint(1) NOT NULL DEFAULT 0,
   `remarques` text DEFAULT NULL,
   `actif` tinyint(1) NOT NULL DEFAULT 1 CHECK (`actif` in (0,1)),
@@ -313,7 +239,7 @@ CREATE TABLE IF NOT EXISTS `vehicule` (
   CONSTRAINT `fk_vehicule_loueur` FOREIGN KEY (`id_loueur`) REFERENCES `loueur` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ck_vehicule_capacite` CHECK (`capacite_passagers` > 0),
   CONSTRAINT `ck_vehicule_clim` CHECK (`climatisation` in (0,1))
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

@@ -212,33 +212,33 @@ SET AUTOCOMMIT=@OLD_AUTOCOMMIT;
 
 SET @OLD_AUTOCOMMIT=@@AUTOCOMMIT, @@AUTOCOMMIT=0;
 /*!40000 ALTER TABLE `type_chambre` DISABLE KEYS */;
-INSERT INTO `type_chambre` (`id`, `id_hotel`, `libelle`, `capacite`, `nb_chambres`) VALUES (31,14,'Chambre simple',1,5),
-(32,14,'Chambre double',2,5),
-(33,14,'Suite familiale',4,5),
-(34,15,'Chambre simple',1,5),
-(35,15,'Chambre double',2,5),
-(36,15,'Suite familiale',4,5),
-(37,16,'Chambre simple',1,5),
-(38,16,'Chambre double',2,5),
-(39,16,'Suite familiale',4,5),
-(40,17,'Chambre simple',1,5),
-(41,17,'Chambre double',2,5),
-(42,17,'Suite familiale',4,5),
-(43,18,'Chambre simple',1,5),
-(44,18,'Chambre double',2,5),
-(45,18,'Suite familiale',4,5),
-(46,19,'Chambre simple',1,5),
-(47,19,'Chambre double',2,5),
-(48,19,'Suite familiale',4,5),
-(49,20,'Chambre simple',1,5),
-(50,20,'Chambre double',2,5),
-(51,20,'Suite familiale',4,5),
-(52,21,'Chambre simple',1,5),
-(53,21,'Chambre double',2,5),
-(54,21,'Suite familiale',4,5),
-(55,22,'Chambre simple',1,5),
-(56,22,'Chambre double',2,5),
-(57,22,'Suite familiale',4,5);
+INSERT INTO `type_chambre` (`id`, `id_hotel`, `libelle`, `capacite`) VALUES (31,14,'Chambre simple',1),
+(32,14,'Chambre double',2),
+(33,14,'Suite familiale',4),
+(34,15,'Chambre simple',1),
+(35,15,'Chambre double',2),
+(36,15,'Suite familiale',4),
+(37,16,'Chambre simple',1),
+(38,16,'Chambre double',2),
+(39,16,'Suite familiale',4),
+(40,17,'Chambre simple',1),
+(41,17,'Chambre double',2),
+(42,17,'Suite familiale',4),
+(43,18,'Chambre simple',1),
+(44,18,'Chambre double',2),
+(45,18,'Suite familiale',4),
+(46,19,'Chambre simple',1),
+(47,19,'Chambre double',2),
+(48,19,'Suite familiale',4),
+(49,20,'Chambre simple',1),
+(50,20,'Chambre double',2),
+(51,20,'Suite familiale',4),
+(52,21,'Chambre simple',1),
+(53,21,'Chambre double',2),
+(54,21,'Suite familiale',4),
+(55,22,'Chambre simple',1),
+(56,22,'Chambre double',2),
+(57,22,'Suite familiale',4);
 /*!40000 ALTER TABLE `type_chambre` ENABLE KEYS */;
 COMMIT;
 SET AUTOCOMMIT=@OLD_AUTOCOMMIT;
@@ -346,16 +346,16 @@ SET AUTOCOMMIT=@OLD_AUTOCOMMIT;
 
 SET @OLD_AUTOCOMMIT=@@AUTOCOMMIT, @@AUTOCOMMIT=0;
 /*!40000 ALTER TABLE `vehicule` DISABLE KEYS */;
-INSERT INTO `vehicule` (`id`, `id_loueur`, `modele`, `categorie`, `capacite_passagers`, `nb_exemplaires`, `climatisation`, `remarques`, `actif`) VALUES (15,8,'Toyota Land Cruiser','4x4',7,3,1,NULL,1),
-(16,8,'Toyota Hilux','4x4',5,3,1,NULL,1),
-(17,8,'Toyota HiAce','Minibus',15,3,1,NULL,1),
-(18,9,'Hyundai Starex','Minibus',9,3,1,NULL,1),
-(19,9,'Suzuki Jimny','4x4',4,3,1,NULL,1),
-(20,9,'Dacia Logan','Berline',4,3,1,NULL,1),
-(21,10,'Toyota Land Cruiser','4x4',7,3,1,NULL,1),
-(22,10,'Mitsubishi L200','4x4',5,3,0,NULL,1),
-(23,11,'Toyota Coaster','Minibus',25,3,1,NULL,1),
-(24,11,'Peugeot 508','Berline',4,3,1,NULL,1);
+INSERT INTO `vehicule` (`id`, `id_loueur`, `modele`, `categorie`, `capacite_passagers`, `climatisation`, `remarques`, `actif`) VALUES (15,8,'Toyota Land Cruiser','4x4',7,1,NULL,1),
+(16,8,'Toyota Hilux','4x4',5,1,NULL,1),
+(17,8,'Toyota HiAce','Minibus',15,1,NULL,1),
+(18,9,'Hyundai Starex','Minibus',9,1,NULL,1),
+(19,9,'Suzuki Jimny','4x4',4,1,NULL,1),
+(20,9,'Dacia Logan','Berline',4,1,NULL,1),
+(21,10,'Toyota Land Cruiser','4x4',7,1,NULL,1),
+(22,10,'Mitsubishi L200','4x4',5,0,NULL,1),
+(23,11,'Toyota Coaster','Minibus',25,1,NULL,1),
+(24,11,'Peugeot 508','Berline',4,1,NULL,1);
 /*!40000 ALTER TABLE `vehicule` ENABLE KEYS */;
 COMMIT;
 SET AUTOCOMMIT=@OLD_AUTOCOMMIT;

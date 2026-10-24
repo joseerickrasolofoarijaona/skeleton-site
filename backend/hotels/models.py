@@ -1,4 +1,4 @@
-"""Modèles de la base honey_hotels (tables déjà créées par honey_hotels.sql).
+"""Modèles de la base honey_hotels (tables créées par database/schema_complet.sql).
 
 managed = False : Django ne touche pas à la structure des tables.
 """
@@ -55,7 +55,6 @@ class TypeChambre(models.Model):
         related_name="types_chambre")
     libelle = models.CharField(max_length=100)
     capacite = models.PositiveSmallIntegerField()
-    nb_chambres = models.PositiveSmallIntegerField(default=1)
 
     class Meta:
         managed = False
@@ -130,46 +129,3 @@ class Cotation(models.Model):
     class Meta:
         managed = False
         db_table = "cotation"
-
-
-class Reservation(models.Model):
-    """Demande de réservation d'hôtel (table reservation)."""
-    STATUTS = [
-        ("en_attente", "En attente"),
-        ("confirmee", "Confirmée"),
-        ("refusee", "Refusée"),
-        ("annulee", "Annulée"),
-    ]
-    reference = models.CharField(max_length=20, unique=True)
-    hotel = models.ForeignKey(
-        Hotel, on_delete=models.DO_NOTHING, db_column="id_hotel",
-        related_name="reservations")
-    type_chambre = models.ForeignKey(
-        TypeChambre, on_delete=models.DO_NOTHING, db_column="id_type_chambre",
-        related_name="reservations")
-    supplement_pension = models.ForeignKey(
-        SupplementPension, on_delete=models.DO_NOTHING,
-        db_column="id_supplement_pension", null=True, blank=True,
-        related_name="reservations")
-    arrivee = models.DateField()
-    depart = models.DateField()
-    nb_chambres = models.PositiveSmallIntegerField()
-    nb_personnes = models.PositiveSmallIntegerField()
-    nom_client = models.CharField(max_length=150)
-    email_client = models.EmailField(max_length=150)
-    telephone_client = models.CharField(max_length=50, null=True, blank=True)
-    message = models.TextField(null=True, blank=True)
-    total_estime = models.DecimalField(max_digits=14, decimal_places=2)
-    detail = models.TextField()
-    statut = models.CharField(max_length=20, choices=STATUTS, default="en_attente")
-    note_equipe = models.TextField(null=True, blank=True)
-    cree_le = models.DateTimeField(auto_now_add=True)
-    modifie_le = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        managed = False
-        db_table = "reservation"
-        ordering = ["-cree_le"]
-
-    def __str__(self):
-        return f"{self.reference} - {self.nom_client}"

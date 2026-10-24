@@ -1,4 +1,4 @@
-"""Modèles de la base honey_vehicules (tables déjà créées par honey_vehicules.sql).
+"""Modèles de la base honey_vehicules (tables créées par database/schema_complet.sql).
 
 managed = False : Django ne touche pas à la structure des tables.
 """
@@ -29,7 +29,6 @@ class Vehicule(models.Model):
     modele = models.CharField(max_length=100)
     categorie = models.CharField(max_length=50)
     capacite_passagers = models.PositiveSmallIntegerField()
-    nb_exemplaires = models.PositiveSmallIntegerField(default=1)
     climatisation = models.BooleanField(default=False)
     remarques = models.TextField(null=True, blank=True)
     actif = models.BooleanField(default=True)
@@ -89,40 +88,3 @@ class CotationVehicule(models.Model):
     class Meta:
         managed = False
         db_table = "cotation_vehicule"
-
-
-class ReservationVehicule(models.Model):
-    """Demande de location de véhicule (table reservation_vehicule)."""
-    STATUTS = [
-        ("en_attente", "En attente"),
-        ("confirmee", "Confirmée"),
-        ("refusee", "Refusée"),
-        ("annulee", "Annulée"),
-    ]
-    reference = models.CharField(max_length=20, unique=True)
-    vehicule = models.ForeignKey(
-        Vehicule, on_delete=models.DO_NOTHING, db_column="id_vehicule",
-        related_name="reservations")
-    date_debut = models.DateField()
-    date_fin = models.DateField()
-    avec_chauffeur = models.BooleanField(default=False)
-    nb_vehicules = models.PositiveSmallIntegerField(default=1)
-    nb_personnes = models.PositiveSmallIntegerField()
-    nom_client = models.CharField(max_length=150)
-    email_client = models.EmailField(max_length=150)
-    telephone_client = models.CharField(max_length=50, null=True, blank=True)
-    message = models.TextField(null=True, blank=True)
-    total_estime = models.DecimalField(max_digits=14, decimal_places=2)
-    detail = models.TextField()
-    statut = models.CharField(max_length=20, choices=STATUTS, default="en_attente")
-    note_equipe = models.TextField(null=True, blank=True)
-    cree_le = models.DateTimeField(auto_now_add=True)
-    modifie_le = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        managed = False
-        db_table = "reservation_vehicule"
-        ordering = ["-cree_le"]
-
-    def __str__(self):
-        return f"{self.reference} - {self.nom_client}"

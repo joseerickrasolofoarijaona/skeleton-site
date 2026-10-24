@@ -1,4 +1,4 @@
-{% load static gestion_tags %}<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="{% static 'css/gestion.css' %}">
 </head>
 <body class="gestion">
-{% reservations_en_attente as nb_attente %}
 
 <aside class="sidebar">
     <a class="brand" href="{% url 'gestion:tableau_de_bord' %}">
@@ -18,13 +17,13 @@
     </a>
     <nav>
         <a href="{% url 'gestion:tableau_de_bord' %}" {% if section == 'accueil' %}class="current"{% endif %}>Tableau de bord</a>
-        <a href="{% url 'gestion:reservations' %}" {% if section == 'reservations' %}class="current"{% endif %}>Réservations{% if nb_attente %}<span class="pill">{{ nb_attente }}</span>{% endif %}</a>
         <a href="{% url 'gestion:hotels' %}" {% if section == 'hotels' %}class="current"{% endif %}>Hôtels</a>
         <a href="{% url 'gestion:vehicules' %}" {% if section == 'vehicules' %}class="current"{% endif %}>Véhicules</a>
         <a href="{% url 'gestion:loueurs' %}" {% if section == 'loueurs' %}class="current"{% endif %}>Loueurs</a>
         <a href="{% url 'gestion:tarifs' %}" {% if section == 'tarifs' %}class="current"{% endif %}>Tarifs</a>
+        <a href="{% url 'gestion:parametres' %}" {% if section == 'parametres' %}class="current"{% endif %}>Paramètres</a>
     </nav>
-    <a class="back" href="{% url 'hotels:liste' %}">&larr; Voir le site public</a>
+    <a class="back" href="{% url 'hotels:liste' %}">&larr; Voir la recherche et les cotations</a>
 </aside>
 
 <div class="main">

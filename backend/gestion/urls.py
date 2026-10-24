@@ -1,15 +1,15 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 
-from . import (
-    views, views_reservations as vr, views_tarifs as vt, views_vehicules as vv)
+from . import views, views_tarifs as vt, views_vehicules as vv
 
 app_name = "gestion"
 
 urlpatterns = [
-    path("", vr.tableau_de_bord, name="tableau_de_bord"),
+    path("", views.tableau_de_bord, name="tableau_de_bord"),
     path("connexion/", views.ConnexionView.as_view(), name="login"),
     path("deconnexion/", LogoutView.as_view(), name="logout"),
+    path("parametres/", views.parametres, name="parametres"),
 
     # Hôtels
     path("hotels/", views.hotels, name="hotels"),
@@ -36,10 +36,4 @@ urlpatterns = [
 
     # Tarifs
     path("tarifs/", vt.index_tarifs, name="tarifs"),
-
-    # Réservations
-    path("reservations/", vr.liste, name="reservations"),
-    path("reservations/<str:reference>/", vr.detail, name="reservation_detail"),
-    path("reservations/<str:reference>/statut/", vr.changer_statut, name="reservation_statut"),
-    path("reservations/<str:reference>/note/", vr.enregistrer_note, name="reservation_note"),
 ]

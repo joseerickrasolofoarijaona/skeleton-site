@@ -1,10 +1,13 @@
-# Honey Group : site vitrine et module Tourisme
+# Honey Group : site vitrine et base centralisée des partenaires
 
 Projet de stage. Il contient trois parties :
 
 1. **Le site vitrine** (PHP, HTML, CSS, JavaScript), basé sur le design Figma de l'entreprise.
 2. **Deux bases de données indépendantes** (MariaDB / MySQL) : `honey_hotels` et `honey_vehicules`.
-3. **L'application Python / Django** qui lit ces deux bases : recherche, cotation, demandes de réservation et espace de gestion.
+3. **L'application Python / Django** qui lit ces deux bases : recherche rapide, fiches détaillées avec calcul de cotation, et espace de gestion de l'équipe.
+
+L'outil sert à **centraliser les informations des hôtels partenaires et des loueurs de véhicules**, pour retrouver
+rapidement un partenaire et **calculer une cotation**. Ce n'est pas un site de réservation.
 
 ## Prérequis
 
@@ -59,34 +62,36 @@ Deux serveurs, chacun dans son terminal :
 
 ## Fonctionnalités
 
-**Côté public**
+**Recherche et cotation**
 - Recherche d'hôtels par destination, catégorie et équipements (liste de choix et cases à cocher).
 - Recherche de véhicules par type, loueur et période.
 - Barre de recherche globale (hôtels et véhicules) : plusieurs mots possibles.
-- Fiche détaillée avec la grille des tarifs, et **calculateur de prix** : hôtel nuit par nuit, véhicule jour par jour, avec changement de saison au milieu d'un séjour.
-- Vérification de la **disponibilité** des chambres et des véhicules.
-- **Demande de réservation** : formulaire, référence unique (HTL-… ou VEH-…), page de confirmation, e-mail à l'équipe et accusé de réception au client.
+- Fiche détaillée avec la grille des tarifs, et **calculateur de cotation** : hôtel nuit par nuit, véhicule jour par jour, avec changement de saison au milieu d'un séjour. La cotation s'imprime.
 
-**Côté équipe (`/gestion/`, connexion obligatoire)**
-- Tableau de bord, avec le nombre de demandes en attente.
+**Espace de gestion (`/gestion/`, connexion obligatoire)**
 - Hôtels, véhicules et loueurs : ajouter, modifier, **archiver et restaurer** (pas de suppression définitive).
-- Tarifs : types de chambre et stock, saisons, grille des prix, suppléments de pension, prix journaliers des véhicules.
-- Réservations : liste filtrée par statut, détail d'une demande, **confirmer, refuser, annuler**, note interne, e-mail automatique au client à chaque décision.
+- Tarifs : types de chambre, saisons, grille des prix, suppléments de pension, prix journaliers des véhicules.
+- **Paramètres : taux de change** euro / ariary.
 
-## Règles de fonctionnement
+## Devise
 
-- Prix en **Ariary (Ar)**. Hôtel : prix de la nuit de chaque saison, plus le supplément de pension **par nuit et par chambre**, multiplié par le nombre de chambres. Véhicule : jours entiers (premier et dernier compris), tarif avec ou sans chauffeur, multiplié par le nombre de véhicules.
-- Le prix d'une demande est **recalculé par le serveur** et figé à l'enregistrement : modifier un tarif ensuite ne change pas les demandes déjà reçues.
-- **Disponibilité** : chaque type de chambre a un stock (`nb_chambres`) et chaque véhicule un nombre d'exemplaires (`nb_exemplaires`). Seules les réservations **confirmées** occupent le stock. Une demande en attente ne bloque rien. La confirmation est refusée si le stock est insuffisant.
-- Statuts : en attente, confirmée, refusée, annulée. Une demande refusée ou annulée est définitive.
+Tous les prix sont saisis et stockés en **Ariary (MGA)**. Partout où un prix est affiché, l'équivalent en **euros** est
+ajouté (« 320 000 Ar ≈ 64,00 € »). Le taux se règle dans **Gestion, Paramètres** (« 1 € vaut … Ar ») : il est mis à jour par
+l'équipe, selon le taux de référence choisi par l'entreprise. Tant qu'il n'est pas défini, un taux provisoire de 5 000 Ar est
+utilisé et signalé.
+
+## Règles de calcul
+
+- Hôtel : prix de la nuit de chaque saison, plus le supplément de pension **par nuit et par chambre**, multiplié par le nombre de chambres.
+- Véhicule : jours entiers (premier et dernier compris), tarif avec ou sans chauffeur, multiplié par le nombre de véhicules.
 - Les deux bases sont **indépendantes** : aucune clé étrangère ne les relie. Voir `database/MLD.md`.
 
 ## Sécurité
 
-- Les fichiers `.env` (mots de passe) ne sont **jamais** publiés (`.gitignore`). Copiez `.env.example`.
-- L'application se connecte à MariaDB avec un compte limité (`honey_app`, droits de lecture et d'écriture, sans droit de modifier la structure).
-- L'espace de gestion est réservé aux comptes de l'équipe. Les formulaires sont protégés (CSRF), il y a un champ anti-robot et une limite de demandes par heure.
-- Avant une mise en ligne : `DJANGO_DEBUG=0`, clé secrète définie, `ALLOWED_HOSTS` dans `backend/honey_site/settings.py`, HTTPS, un serveur WSGI (gunicorn ou autre) et de nouveaux mots de passe.
+- Les fichiers `.env` (mots de passe) ne sont **jamais** publiés (`.gitignore`). Copiez les `.env.example`.
+- L'application se connecte à MariaDB avec un compte limité (`honey_app`, lecture et écriture, sans droit de modifier la structure).
+- L'espace de gestion est réservé aux comptes de l'équipe, et les formulaires sont protégés (CSRF).
+- Avant une mise en ligne : `DJANGO_DEBUG=0`, clé secrète définie, `ALLOWED_HOSTS` dans `backend/honey_site/settings.py`, HTTPS, un serveur WSGI (gunicorn ou autre) et de nouveaux mots de passe. Pensez aussi à décider si la recherche doit être réservée à l'équipe (connexion obligatoire).
 
 ## Structure du projet
 
@@ -96,17 +101,22 @@ Deux serveurs, chacun dans son terminal :
     data/          textes du site vitrine
     contact.php    formulaire de contact (PHPMailer, dans vendor/)
     backend/       application Django
-        honey_site/   réglages, adresses, recherche globale, e-mails
-        hotels/       module hôtels (modèles, recherche, cotation, disponibilité, réservation)
+        honey_site/   réglages, adresses, recherche globale
+        hotels/       module hôtels (modèles, recherche, cotation)
         vehicules/    module véhicules (même structure)
-        gestion/      espace de gestion de l'équipe
+        gestion/      espace de gestion de l'équipe, taux de change
         templates/    pages HTML de l'application
     database/      schema_complet.sql, donnees_demo.sql, utilisateur.sql, MLD.md, historique/
+    docs/          compte-rendu de mission
 
 ## Limites connues
 
-- Pas de paiement en ligne : l'équipe confirme chaque demande.
-- Le stock est un **nombre** : le système ne sait pas quelle chambre précise est occupée.
 - Le site vitrine (port 8000) et l'application (port 8001) sont deux serveurs séparés, reliés par des liens dans leurs barres de navigation.
+- Les cotations calculées ne sont pas enregistrées : elles s'impriment depuis la fiche.
 - Les données de démonstration (hôtels, loueurs, prix) sont inventées.
-- Sans réglage SMTP, les e-mails s'affichent dans le terminal au lieu d'être envoyés.
+- Une première version contenait des demandes de réservation et un stock : elle est conservée dans l'étiquette Git `v1-avec-reservation`.
+
+## Documentation
+
+- Compte-rendu de mission : `docs/COMPTE_RENDU.md`
+- Schéma relationnel des bases : `database/MLD.md`

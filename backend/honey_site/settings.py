@@ -123,17 +123,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # =====================================================================
-# Honey Group : configuration ajoutée (deux bases indépendantes)
+# Honey Group : configuration ajoutée
 # =====================================================================
 import os
 from dotenv import load_dotenv
 
 load_dotenv(BASE_DIR / ".env")
 
-INSTALLED_APPS += ["hotels", "vehicules"]
+INSTALLED_APPS += ["hotels", "vehicules", "gestion"]
 
 DATABASES = {
-    # Base interne de Django (comptes, sessions) : n'est PAS une base Honey
+    # Base interne de Django (comptes, sessions, taux de change)
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
@@ -159,61 +159,24 @@ DATABASES = {
         "OPTIONS": {"charset": "utf8mb4"},
     },
 }
-
 DATABASE_ROUTERS = ["honey_site.routers.HoneyRouter"]
 
 LANGUAGE_CODE = "fr"
 TIME_ZONE = "Indian/Antananarivo"
 
-
-# Templates et fichiers statiques (le CSS du skeleton est réutilisé)
+# Pages HTML, CSS partagé avec le site vitrine, taux de change sur toutes les pages
 TEMPLATES[0]["DIRS"] = [BASE_DIR / "templates"]
+TEMPLATES[0]["OPTIONS"]["context_processors"].append("gestion.context_processors.monnaie")
 STATICFILES_DIRS = [BASE_DIR.parent / "assets"]
 
-
-# Connexion à l'espace de gestion
-LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "hotels:gestion"
-LOGOUT_REDIRECT_URL = "hotels:liste"
-
-
-# Espace de gestion (côté admin)
-INSTALLED_APPS += ["gestion"]
+# Espace de gestion
 LOGIN_URL = "gestion:login"
 LOGIN_REDIRECT_URL = "gestion:tableau_de_bord"
 LOGOUT_REDIRECT_URL = "hotels:liste"
 
-
-# =====================================================================
-# E-mails des réservations
-# Sans SMTP_HOST dans .env, les e-mails s'affichent dans le terminal.
-# =====================================================================
-EMAIL_HOST = os.environ.get("SMTP_HOST", "")
-if EMAIL_HOST:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_PORT = int(os.environ.get("SMTP_PORT") or 587)
-    EMAIL_HOST_USER = os.environ.get("SMTP_USERNAME", "")
-    EMAIL_HOST_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
-    EMAIL_USE_SSL = EMAIL_PORT == 465
-    EMAIL_USE_TLS = not EMAIL_USE_SSL
-    EMAIL_TIMEOUT = 10
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-DEFAULT_FROM_EMAIL = (
-    os.environ.get("SMTP_FROM") or os.environ.get("SMTP_USERNAME")
-    or "reservations@honeygroup.local")
-TEAM_EMAIL = (
-    os.environ.get("SMTP_TO") or os.environ.get("SMTP_FROM")
-    or "equipe@honeygroup.local")
-
-
-# Mode de fonctionnement et limites
 # DJANGO_DEBUG=0 simule le site en ligne (pages d'erreur propres)
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
-RESERVATIONS_MAX_PAR_HEURE = int(os.environ.get("RESERVATIONS_MAX_PAR_HEURE") or 5)
-
 
 # Clé secrète : à définir dans backend/.env (DJANGO_SECRET_KEY)
 _cle = os.environ.get("DJANGO_SECRET_KEY", "")

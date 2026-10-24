@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load monnaie %}
 {% block title %}{{ hotel.nom }} - Honey Group{% endblock %}
 
 {% block content %}
@@ -18,7 +19,7 @@
             {% if resultat %}
             <section class="quote-result" id="cotation">
                 <div class="quote-head">
-                    <h2>Votre cotation</h2>
+                    <h2>Cotation</h2>
                     <span>{{ resultat.nuits }} nuit{{ resultat.nuits|pluralize }} &middot; {{ resultat.nb_chambres }} chambre{{ resultat.nb_chambres|pluralize }}</span>
                 </div>
                 <p class="quote-sub">
@@ -35,31 +36,29 @@
                             <tr>
                                 <td>{{ l.saison }} <small>({{ l.du|date:"d/m" }} → {{ l.au|date:"d/m" }})</small></td>
                                 <td>{{ l.nuits }}</td>
-                                <td>{{ l.prix|floatformat:"0g" }} Ar</td>
-                                <td class="num">{{ l.montant|floatformat:"0g" }} Ar</td>
+                                <td>{% prix l.prix %}</td>
+                                <td class="num">{% prix l.montant %}</td>
                             </tr>
                             {% endfor %}
                             {% if resultat.supplement %}
                             <tr>
                                 <td>{{ resultat.supplement.libelle }}</td>
                                 <td>{{ resultat.supplement.nuits }}</td>
-                                <td>{{ resultat.supplement.prix|floatformat:"0g" }} Ar</td>
-                                <td class="num">{{ resultat.supplement.montant|floatformat:"0g" }} Ar</td>
+                                <td>{% prix resultat.supplement.prix %}</td>
+                                <td class="num">{% prix resultat.supplement.montant %}</td>
                             </tr>
                             {% endif %}
                         </tbody>
                         <tfoot>
-                            <tr><td colspan="3">Total</td><td class="num">{{ resultat.total|floatformat:"0g" }} Ar</td></tr>
+                            <tr><td colspan="3">Total</td><td class="num">{% prix resultat.total %}</td></tr>
                         </tfoot>
                     </table>
                 </div>
                 {% if resultat.nb_chambres > 1 %}
                 <p class="quote-note">Les montants sont calculés pour {{ resultat.nb_chambres }} chambres.</p>
                 {% endif %}
-                <p class="quote-note">Cotation indicative, valable sous réserve de disponibilité.</p>
-                {% if resultat.dispo.disponible %}<p class="dispo-badge dispo-ok">✓ Disponible pour ces dates</p>{% else %}<p class="dispo-badge dispo-no">✗ {{ resultat.dispo.message }}</p>{% endif %}
+                <p class="quote-note">Montants en Ariary (MGA), avec l'équivalent en euros : 1 € = {{ taux_eur|floatformat:"-2g" }} Ar{% if taux_maj %} (taux du {{ taux_maj|date:"d/m/Y" }}){% endif %}{% if not taux_defini %}, taux provisoire{% endif %}. Cotation indicative.</p>
                 <div class="quote-actions no-print">
-                    {% if resultat.dispo.disponible %}<a href="{% url 'hotels:reserver' hotel.id %}?{{ request.GET.urlencode }}" class="btn btn-secondary">Demander cette réservation</a>{% endif %}
                     <button type="button" class="btn btn-primary btn-sm" onclick="window.print()">Imprimer la cotation</button>
                 </div>
             </section>
@@ -75,7 +74,7 @@
             {% endif %}
 
             <section class="detail-block">
-                <h2>Chambres et tarifs <small>(prix par nuit, en Ar)</small></h2>
+                <h2>Chambres et tarifs <small>(prix par nuit)</small></h2>
                 {% if grille and saisons %}
                 <div class="table-scroll">
                     <table class="price-table">
@@ -89,7 +88,7 @@
                             {% for row in grille %}
                             <tr>
                                 <td><strong>{{ row.chambre.libelle }}</strong> <small>({{ row.chambre.capacite }} pers.)</small></td>
-                                {% for p in row.prix %}<td class="num">{% if p %}{{ p|floatformat:"0g" }}{% else %}—{% endif %}</td>{% endfor %}
+                                {% for p in row.prix %}<td class="num">{% prix p %}</td>{% endfor %}
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -108,7 +107,7 @@
                         <thead><tr><th>Formule</th><th class="num">Supplément</th></tr></thead>
                         <tbody>
                             {% for s in supplements %}
-                            <tr><td>{{ s.type_pension }}</td><td class="num">+ {{ s.prix_supplement|floatformat:"0g" }} Ar</td></tr>
+                            <tr><td>{{ s.type_pension }}</td><td class="num">+ {% prix s.prix_supplement %}</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -127,7 +126,7 @@
 
         <aside class="detail-side">
             <form class="filters" method="get" action="#cotation">
-                <h2>Calculer le prix</h2>
+                <h2>Calculer la cotation</h2>
                 {% for e in form.non_field_errors %}<p class="form-error">{{ e }}</p>{% endfor %}
 
                 <div class="form-group">

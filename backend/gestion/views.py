@@ -5,10 +5,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from hotels.forms import HotelForm
-from hotels.models import Cotation, Hotel, HotelEquipement
-from vehicules.models import CotationVehicule, Loueur, Vehicule
+from hotels.models import Hotel, HotelEquipement
+from vehicules.models import Loueur, Vehicule
 
-from .forms import FormulaireConnexion
+from .forms import FormulaireConnexion, ParametresForm
+from .models import Parametres
 
 # Accès réservé aux comptes de l'équipe
 staff_required = user_passes_test(
@@ -30,9 +31,24 @@ def tableau_de_bord(request):
         "vehicules_actifs": Vehicule.objects.filter(actif=True).count(),
         "vehicules_archives": Vehicule.objects.filter(actif=False).count(),
         "loueurs_actifs": Loueur.objects.filter(actif=True).count(),
-        "cotations_hotels": Cotation.objects.count(),
-        "cotations_vehicules": CotationVehicule.objects.count(),
     })
+
+
+# ---------------------------------------------------------------------
+# Paramètres (taux de change)
+# ---------------------------------------------------------------------
+@staff_required
+def parametres(request):
+    p, _ = Parametres.objects.get_or_create(pk=1)
+    form = ParametresForm(request.POST or None, instance=p)
+    if request.method == "POST" and form.is_valid():
+        obj = form.save(commit=False)
+        obj.defini = True
+        obj.save()
+        messages.success(request, "Le taux de change a été enregistré.")
+        return redirect("gestion:parametres")
+    return render(request, "gestion/parametres.html", {
+        "section": "parametres", "form": form})
 
 
 # ---------------------------------------------------------------------

@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 
 from .cotation import CotationError, calculer_cotation
-from .disponibilite import verifier
 from .forms_cotation import CotationVehiculeForm
 from .models import SaisonVehicule, TarifVehicule, Vehicule
 
@@ -31,8 +30,6 @@ def detail_vehicule(request, pk):
                 vehicule, d["debut"], d["fin"],
                 d["chauffeur"] == "1", d["nb_vehicules"])
             resultat.update(debut=d["debut"], fin=d["fin"])
-            resultat["dispo"] = verifier(
-                vehicule, d["debut"], d["fin"], d["nb_vehicules"])
         except CotationError as e:
             form.add_error(None, str(e))
 

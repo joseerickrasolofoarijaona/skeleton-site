@@ -1,0 +1,28 @@
+{% extends "gestion/base_gestion.html" %}
+{% block title %}Paramètres{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Paramètres</h1>
+<p class="page-sub">Les prix sont saisis en Ariary (MGA) et affichés aussi en euros avec le taux ci-dessous.</p>
+
+<form method="post" class="form-card">
+    {% csrf_token %}
+    {% for e in form.non_field_errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+
+    <div class="form-group">
+        <label for="{{ form.taux_eur_mga.id_for_label }}">{{ form.taux_eur_mga.label }}</label>
+        {{ form.taux_eur_mga }}
+        {% for e in form.taux_eur_mga.errors %}<p class="field-error">{{ e }}</p>{% endfor %}
+        <p class="hint">Exemple : si 1 € s'échange contre 5 000 Ar, saisissez 5000. Utilisez le taux de référence choisi par l'entreprise (celui de votre banque, par exemple).</p>
+    </div>
+
+    <p class="hint">
+        {% if taux_defini %}Dernière mise à jour : {{ taux_maj|date:"d/m/Y à H:i" }}.{% else %}Le taux n'a jamais été défini : un taux provisoire est utilisé.{% endif %}
+    </p>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-secondary">Enregistrer</button>
+        <a href="{% url 'gestion:tableau_de_bord' %}" class="btn btn-outline">Annuler</a>
+    </div>
+</form>
+{% endblock %}

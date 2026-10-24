@@ -38,12 +38,10 @@ class SaisonVehiculeForm(SaisonBaseForm):
 class TypeChambreForm(forms.ModelForm):
     capacite = forms.IntegerField(
         min_value=1, max_value=50, label="Capacité (personnes)")
-    nb_chambres = forms.IntegerField(
-        min_value=0, max_value=1000, initial=1, label="Stock (chambres)")
 
     class Meta:
         model = TypeChambre
-        fields = ["libelle", "capacite", "nb_chambres"]
+        fields = ["libelle", "capacite"]
         labels = {"libelle": "Type de chambre"}
 
 
