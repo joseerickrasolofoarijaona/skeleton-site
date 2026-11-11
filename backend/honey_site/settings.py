@@ -164,10 +164,10 @@ DATABASE_ROUTERS = ["honey_site.routers.HoneyRouter"]
 LANGUAGE_CODE = "fr"
 TIME_ZONE = "Indian/Antananarivo"
 
-# Pages HTML, CSS partagé avec le site vitrine, taux de change sur toutes les pages
+# Pages HTML, CSS de l application, taux de change sur toutes les pages
 TEMPLATES[0]["DIRS"] = [BASE_DIR / "templates"]
 TEMPLATES[0]["OPTIONS"]["context_processors"].append("gestion.context_processors.monnaie")
-STATICFILES_DIRS = [BASE_DIR.parent / "assets"]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Espace de gestion
 LOGIN_URL = "gestion:login"

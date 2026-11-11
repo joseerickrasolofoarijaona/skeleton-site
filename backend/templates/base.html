@@ -14,13 +14,12 @@
 
 <header class="site-header">
     <nav class="navbar">
-        {# Adresse du site vitrine (serveur PHP du skeleton) #}
-        <a href="http://127.0.0.1:8000/index.html" class="logo">Honey Group</a>
+        <a href="{% url 'hotels:liste' %}" class="logo">Honey Group</a>
 
         <form class="site-search" action="{% url 'recherche' %}" method="get" role="search">
             <input type="search" name="q" value="{{ q|default:'' }}"
                    placeholder="Rechercher un hôtel, un véhicule, une destination…"
-                   aria-label="Rechercher sur le site">
+                   aria-label="Rechercher">
             <button type="submit">Rechercher</button>
         </form>
 
@@ -31,9 +30,7 @@
                    {% if request.resolver_match.app_name == 'hotels' %}class="active"{% endif %}>Hôtels</a></li>
             <li><a href="{% url 'vehicules:liste' %}"
                    {% if request.resolver_match.app_name == 'vehicules' %}class="active"{% endif %}>Véhicules</a></li>
-            <li><a href="http://127.0.0.1:8000/index.html">Site vitrine</a></li>
         </ul>
-        <a href="http://127.0.0.1:8000/pages/contact.html" class="btn btn-primary btn-sm nav-cta">Demande un devis</a>
     </nav>
 </header>
 
@@ -53,7 +50,7 @@
 </footer>
 
 <script>
-    // Menu mobile (même comportement que le skeleton)
+    // Menu mobile
     var header = document.querySelector(".site-header");
     var toggle = document.getElementById("nav-toggle");
     toggle.addEventListener("click", function () {
