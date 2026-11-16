@@ -88,3 +88,17 @@ class CotationVehicule(models.Model):
     class Meta:
         managed = False
         db_table = "cotation_vehicule"
+
+
+class TypeVehicule(models.Model):
+    """Liste de référence des types de véhicule (table type_vehicule)."""
+    libelle = models.CharField(max_length=50, unique=True)
+    ordre = models.PositiveSmallIntegerField(default=99)
+
+    class Meta:
+        managed = False
+        db_table = "type_vehicule"
+        ordering = ["ordre", "libelle"]
+
+    def __str__(self):
+        return self.libelle

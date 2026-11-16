@@ -129,3 +129,30 @@ class Cotation(models.Model):
     class Meta:
         managed = False
         db_table = "cotation"
+
+
+class Destination(models.Model):
+    """Liste de référence des destinations (table destination)."""
+    nom = models.CharField(max_length=150, unique=True)
+
+    class Meta:
+        managed = False
+        db_table = "destination"
+        ordering = ["nom"]
+
+    def __str__(self):
+        return self.nom
+
+
+class CategorieHotel(models.Model):
+    """Liste de référence des catégories d'hôtel (table categorie_hotel)."""
+    libelle = models.CharField(max_length=50, unique=True)
+    ordre = models.PositiveSmallIntegerField(default=99)
+
+    class Meta:
+        managed = False
+        db_table = "categorie_hotel"
+        ordering = ["ordre", "libelle"]
+
+    def __str__(self):
+        return self.libelle

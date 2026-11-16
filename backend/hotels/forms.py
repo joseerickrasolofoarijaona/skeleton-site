@@ -2,39 +2,59 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.db import connections, transaction
 
-from .models import Equipement, Hotel
-
-CATEGORIES = [("", "Non précisée"), ("1 étoile", "1 étoile")] + [
-    (f"{n} étoiles", f"{n} étoiles") for n in range(2, 6)
-]
+from .models import CategorieHotel, Destination, Equipement, Hotel
 
 
 class HotelForm(forms.ModelForm):
-    categorie = forms.ChoiceField(
-        choices=CATEGORIES, required=False, label="Catégorie")
+    localisation = forms.ChoiceField(required=False, label="Destination")
+    nouvelle_destination = forms.CharField(
+        required=False, max_length=150,
+        label="Ou nouvelle destination (si elle n'est pas dans la liste)")
+    categorie = forms.ChoiceField(required=False, label="Catégorie")
     equipements = forms.ModelMultipleChoiceField(
         queryset=Equipement.objects.all(), required=False,
         widget=forms.CheckboxSelectMultiple, label="Équipements")
+
+    field_order = ["nom", "localisation", "nouvelle_destination", "categorie",
+                   "contact", "remarques", "equipements"]
 
     class Meta:
         model = Hotel
         fields = ["nom", "localisation", "categorie", "contact", "remarques"]
         labels = {
             "nom": "Nom de l'hôtel",
-            "localisation": "Destination",
             "contact": "Contact (téléphone ou e-mail)",
             "remarques": "Remarques",
         }
         widgets = {"remarques": forms.Textarea(attrs={"rows": 4})}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["localisation"].choices = (
+            [("", "Choisir une destination")]
+            + [(d.nom, d.nom) for d in Destination.objects.order_by("nom")])
+        self.fields["categorie"].choices = (
+            [("", "Non précisée")]
+            + [(c.libelle, c.libelle) for c in CategorieHotel.objects.all()])
+        self._nouvelle_destination = ""
 
     def clean_categorie(self):
         return self.cleaned_data.get("categorie") or None
 
     def clean(self):
         data = super().clean()
+        nouvelle = " ".join((data.get("nouvelle_destination") or "").split())
+        if nouvelle:
+            data["localisation"] = nouvelle
+        self._nouvelle_destination = nouvelle
+
         nom = (data.get("nom") or "").strip()
         localisation = (data.get("localisation") or "").strip()
-        if nom and localisation:
+        if not localisation:
+            self.add_error(
+                "localisation",
+                "Choisissez une destination ou saisissez-en une nouvelle.")
+        elif nom:
             doublons = Hotel.objects.filter(
                 nom__iexact=nom, localisation__iexact=localisation)
             if self.instance.pk:
@@ -45,8 +65,12 @@ class HotelForm(forms.ModelForm):
         return data
 
     def enregistrer(self):
-        """Enregistre l'hôtel et ses équipements en une seule opération."""
+        """Enregistre l'hôtel, sa destination éventuelle et ses équipements."""
         with transaction.atomic(using="hotels"):
+            if self._nouvelle_destination:
+                dest, _ = Destination.objects.get_or_create(
+                    nom=self._nouvelle_destination)
+                self.instance.localisation = dest.nom
             hotel = self.save()
             ids = [e.id for e in self.cleaned_data["equipements"]]
             with connections["hotels"].cursor() as cur:

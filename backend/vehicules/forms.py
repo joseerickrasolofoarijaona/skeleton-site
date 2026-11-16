@@ -1,10 +1,9 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models import Q
 
-from .models import Loueur, Vehicule
-
-TYPES = ["4x4", "Minibus", "Berline", "Autocar"]
+from .models import Loueur, TypeVehicule, Vehicule
 
 
 class LoueurForm(forms.ModelForm):
@@ -32,9 +31,15 @@ class LoueurForm(forms.ModelForm):
 
 
 class VehiculeForm(forms.ModelForm):
-    categorie = forms.ChoiceField(label="Type de véhicule")
+    categorie = forms.ChoiceField(required=False, label="Type de véhicule")
+    nouveau_type = forms.CharField(
+        required=False, max_length=50,
+        label="Ou nouveau type (s'il n'est pas dans la liste)")
     capacite_passagers = forms.IntegerField(
         min_value=1, max_value=100, label="Nombre de places")
+
+    field_order = ["loueur", "modele", "categorie", "nouveau_type",
+                   "capacite_passagers", "climatisation", "remarques"]
 
     class Meta:
         model = Vehicule
@@ -55,15 +60,21 @@ class VehiculeForm(forms.ModelForm):
         self.fields["loueur"].queryset = Loueur.objects.filter(
             Q(actif=True) | Q(pk=actuel))
         self.fields["loueur"].empty_label = "Choisir un loueur"
-
-        types = list(TYPES)
-        if self.instance.pk and self.instance.categorie not in types:
-            types.append(self.instance.categorie)
         self.fields["categorie"].choices = (
-            [("", "Choisir un type")] + [(t, t) for t in types])
+            [("", "Choisir un type")]
+            + [(t.libelle, t.libelle) for t in TypeVehicule.objects.all()])
+        self._nouveau_type = ""
 
     def clean(self):
         data = super().clean()
+        nouveau = " ".join((data.get("nouveau_type") or "").split())
+        if nouveau:
+            data["categorie"] = nouveau
+        self._nouveau_type = nouveau
+        if not data.get("categorie"):
+            self.add_error(
+                "categorie", "Choisissez un type ou saisissez-en un nouveau.")
+
         loueur = data.get("loueur")
         modele = (data.get("modele") or "").strip()
         if loueur and modele:
@@ -76,3 +87,11 @@ class VehiculeForm(forms.ModelForm):
                     "Ce loueur a déjà un véhicule avec ce modèle.")
             data["modele"] = modele
         return data
+
+    def save(self, commit=True):
+        with transaction.atomic(using="vehicules"):
+            if self._nouveau_type:
+                type_, _ = TypeVehicule.objects.get_or_create(
+                    libelle=self._nouveau_type)
+                self.instance.categorie = type_.libelle
+            return super().save(commit=commit)
