@@ -1,98 +1,88 @@
 # Honey Group : bases de données Hôtels et Véhicules partenaires
 
 Projet de stage. L'objectif est de **centraliser les informations des hôtels partenaires et des loueurs de véhicules**
-dans deux bases de données **séparées et indépendantes**, pour retrouver rapidement un partenaire et calculer une cotation,
-sans fouiller dans des documents imprimés.
+dans deux bases de données **séparées et indépendantes**, pour retrouver rapidement un partenaire et préparer une cotation,
+sans fouiller dans des documents imprimés. Les bases sont conçues pour être **reliées au système de cotation existant**
+de l'entreprise (codes externes, vues de lecture).
 
-Le dépôt contient :
+## Contenu du dépôt
 
-1. **Les deux bases de données** (MariaDB / MySQL) : `honey_hotels` et `honey_vehicules`, d'après les MCD fournis.
-2. **Une application Python / Django** qui les consulte et les met à jour : recherche multicritères, fiches avec calcul de cotation, espace de gestion de l'équipe.
+    database/      les deux bases de données (cœur du projet)
+        schema_complet.sql        structure des deux bases (tables, contraintes, vues)
+        donnees_reference.sql     listes obligatoires (destinations, catégories, équipements, types de véhicule)
+        donnees_demo.sql          données de démonstration inventées (facultatif)
+        utilisateur.sql           compte MariaDB de l'application (à adapter)
+        vues_cotation.sql         vues de lecture pour le système de cotation
+        DICTIONNAIRE_DONNEES.md   chaque table et chaque colonne documentée
+        MLD.md                    schéma relationnel (clés primaires et étrangères)
+        DIAGRAMME.md              diagrammes entité-relation
+        tests/                    tests automatiques des règles des bases et de l'installation
+        import/                   import de tarifs depuis des fichiers CSV
+        outils/                   génération de la documentation et des scripts
+        evolutions/               historique des évolutions de la structure
+    backend/       outil de consultation et de gestion (Python / Django), limité aux deux modules
+    docs/          compte-rendu de mission
 
-## Prérequis
+## Installer les bases de données
 
-- Python 3.12 ou plus (testé avec Python 3.14)
-- MariaDB 10.6 ou plus, ou MySQL 8
-- Sur Debian / Kali : `sudo apt install python3-venv python3-dev libmariadb-dev pkg-config build-essential`
-
-## Installation
-
-**1. Les bases de données**
+Prérequis : MariaDB 10.6 ou plus, ou MySQL 8.
 
     cd database
-    # Remplacez d'abord le mot de passe dans utilisateur.sql
     sudo mariadb < schema_complet.sql
-    sudo mariadb < donnees_demo.sql      # facultatif : données de démonstration (inventées)
+    sudo mariadb < donnees_reference.sql
+    sudo mariadb < donnees_demo.sql        # facultatif
+    # Remplacez le mot de passe dans utilisateur.sql, puis :
     sudo mariadb < utilisateur.sql
 
-**2. L'application Django**
+Vérification : `bash tests/lancer_tests.sh` (tests des règles des bases).
+
+## Raccordement au système de cotation
+
+- **Codes de rapprochement** : `code_externe` (facultatif, unique) sur `hotel`, `type_chambre`, `loueur` et `vehicule`.
+  C'est la clé de correspondance avec le système existant, sans lien entre les deux bases.
+- **Dates** `cree_le` et `modifie_le` sur les tables de partenaires et de tarifs : repérer ce qui a changé depuis la dernière synchronisation.
+- **Vues de lecture** (montants en Ariary, MGA) : `v_tarifs_hotel`, `v_supplements_hotel`, `v_equipements_hotel`, `v_tarifs_vehicule`.
+
+Exemple : prix de la nuit d'une chambre à une date donnée.
+
+    SELECT hotel_nom, type_chambre, saison, prix_nuitee_mga
+    FROM v_tarifs_hotel
+    WHERE hotel_nom = 'Le Palmier Doré' AND type_chambre = 'Chambre double'
+      AND '2026-10-12' BETWEEN saison_debut AND saison_fin;
+
+## Saisir les données réelles
+
+Depuis des tableaux CSV (modèles fournis) : voir `database/import/LISEZMOI.md`. Un mode simulation vérifie tout sans rien enregistrer.
+
+## L'outil de consultation (Django)
+
+Il lit et met à jour les deux bases : recherche (hôtels : destination, catégorie, équipements ; véhicules : type, loueur, période),
+fiches avec **calcul de cotation** imprimable, espace de gestion (ajout, modification, archivage, tarifs), prix en **Ariary (MGA)**
+avec l'équivalent en **euros** (taux réglé dans Gestion, Paramètres).
 
     cd backend
     python3 -m venv venv
     source venv/bin/activate
     pip install -r requirements.txt
-    cp .env.example .env                 # puis remplissez le fichier .env
+    cp .env.example .env                   # puis remplissez le fichier .env
     python manage.py migrate
-    python manage.py createsuperuser     # compte de l'équipe (espace de gestion)
-    python manage.py runserver 8001
+    python manage.py createsuperuser       # compte de l'équipe
+    python manage.py runserver 8001        # http://127.0.0.1:8001
 
-Pour générer la clé secrète : `python -c "import secrets; print(secrets.token_urlsafe(50))"`,
-puis la placer dans `DJANGO_SECRET_KEY` (fichier `backend/.env`).
+Prérequis : Python 3.12 ou plus ; sur Debian / Kali : `sudo apt install python3-venv python3-dev libmariadb-dev pkg-config build-essential`.
 
-| Page | Adresse |
-|---|---|
-| Recherche d'hôtels | http://127.0.0.1:8001/hotels/ |
-| Recherche de véhicules | http://127.0.0.1:8001/vehicules/ |
-| Espace de gestion (équipe) | http://127.0.0.1:8001/gestion/ |
-
-## Fonctionnalités
-
-**Recherche et cotation**
-- Hôtels : destination, catégorie, équipements. Véhicules : type, loueur, période.
-- Barre de recherche globale (hôtels et véhicules).
-- Fiche détaillée avec la grille des tarifs et **calculateur de cotation** imprimable : hôtel nuit par nuit, véhicule jour par jour, avec changement de saison au milieu d'un séjour.
-
-**Espace de gestion (connexion obligatoire)**
-- Hôtels, véhicules et loueurs : ajouter, modifier, **archiver et restaurer** (pas de suppression définitive).
-- Tarifs : types de chambre, saisons, grille des prix, suppléments de pension, prix journaliers des véhicules.
-- Paramètres : taux de change euro / ariary.
-
-## Devise
-
-Les prix sont saisis et stockés en **Ariary (MGA)**. L'équivalent en **euros** est affiché à côté (« 320 000 Ar ≈ 64,00 € »)
-avec un taux réglé dans Gestion, Paramètres. Tant qu'il n'est pas défini, un taux provisoire de 5 000 Ar est utilisé et signalé.
-
-## Règles de calcul
+## Règles de calcul de la cotation
 
 - Hôtel : prix de la nuit de chaque saison, plus le supplément de pension **par nuit et par chambre**, multiplié par le nombre de chambres.
 - Véhicule : jours entiers (premier et dernier compris), tarif avec ou sans chauffeur, multiplié par le nombre de véhicules.
-- Les deux bases sont **indépendantes** : aucune clé étrangère ne les relie. Voir `database/MLD.md`.
 
 ## Sécurité
 
-- Les fichiers `.env` (mots de passe) ne sont **jamais** publiés (`.gitignore`). Copiez `backend/.env.example`.
-- L'application se connecte à MariaDB avec un compte limité (`honey_app`, sans droit de modifier la structure).
-- L'espace de gestion est réservé aux comptes de l'équipe, et les formulaires sont protégés (CSRF).
-- Avant une mise en ligne : `DJANGO_DEBUG=0`, clé secrète définie, `ALLOWED_HOSTS`, HTTPS, un serveur WSGI et de nouveaux mots de passe.
-
-## Structure du projet
-
-    backend/       application Django
-        honey_site/   réglages, adresses, recherche globale
-        hotels/       module hôtels (modèles, recherche, cotation)
-        vehicules/    module véhicules (même structure)
-        gestion/      espace de gestion de l'équipe, taux de change
-        templates/    pages HTML
-        static/css/   feuilles de style
-    database/      schema_complet.sql, donnees_demo.sql, utilisateur.sql, MLD.md, historique/
-    docs/          compte-rendu de mission
+- Les fichiers `.env` (mots de passe) ne sont **jamais** publiés. Copiez `backend/.env.example`.
+- L'application se connecte avec un compte limité (`honey_app`, sans droit de modifier la structure).
+- L'espace de gestion est réservé aux comptes de l'équipe. Avant une mise en ligne : `DJANGO_DEBUG=0`, clé secrète, HTTPS, mots de passe neufs.
 
 ## Historique
 
-- La première mission (site vitrine « skeleton ») est conservée dans la branche `archive-skeleton`.
+- La première mission (site vitrine « skeleton ») est archivée dans la branche `archive-skeleton`.
 - Une version intermédiaire avec réservation et stock est conservée dans l'étiquette `v1-avec-reservation`.
-
-## Documentation
-
-- Schéma relationnel des bases : `database/MLD.md`
-- Compte-rendu de mission : `docs/COMPTE_RENDU.md`

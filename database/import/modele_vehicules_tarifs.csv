@@ -1,0 +1,3 @@
+loueur;ville;telephone;email;modele;type;places;climatisation;saison;date_debut;date_fin;avec_chauffeur;prix_journalier_mga;code_externe_vehicule
+Loueur Modèle Import;Mahajanga;+261 34 00 000 98;contact@exemple.mg;Toyota Prado;4x4;7;oui;Haute saison;2026-07-01;2026-10-31;oui;300000;
+Loueur Modèle Import;Mahajanga;+261 34 00 000 98;contact@exemple.mg;Toyota Prado;4x4;7;oui;Haute saison;2026-07-01;2026-10-31;non;240000;

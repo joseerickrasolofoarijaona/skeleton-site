@@ -1,0 +1,4 @@
+hotel;destination;categorie;contact;equipements;type_chambre;capacite;saison;date_debut;date_fin;prix_nuitee_mga;code_externe_hotel
+Hôtel Modèle Import;Mahajanga;3 étoiles;+261 20 00 000 99;Piscine|Wi-Fi;Chambre double;2;Haute saison;2026-07-01;2026-10-31;150000;
+Hôtel Modèle Import;Mahajanga;3 étoiles;+261 20 00 000 99;Piscine|Wi-Fi;Chambre double;2;Basse saison;2026-11-01;2027-06-30;110000;
+Hôtel Modèle Import;Mahajanga;3 étoiles;+261 20 00 000 99;Piscine|Wi-Fi;Chambre simple;1;Haute saison;2026-07-01;2026-10-31;100000;
